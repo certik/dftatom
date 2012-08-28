@@ -1,0 +1,43 @@
+PROG = libdftatom.a
+
+OBJS =	constants.o dft.o dft_data.o dftatom.o drivers.o \
+	energies.o mesh.o mixings.o ode1d.o rdirac.o \
+	reigen.o rpoisson.o rschroed.o \
+	states.o types.o utils.o
+
+all: $(PROG)
+
+$(PROG): $(OBJS)
+	ar rcs $@ $(OBJS)
+
+clean:
+	rm -f $(PROG) $(OBJS) *.mod
+
+.SUFFIXES: $(SUFFIXES) .f90
+
+%.o: %.f90
+	$(F90) $(F90FLAGS) -c $<
+
+c_dftatom.o: dft.o dft_data.o dftatom.o mixings.o
+constants.o: types.o
+dft.o: constants.o dft_data.o energies.o mixings.o ode1d.o reigen.o \
+	rpoisson.o types.o utils.o
+dft_data.o: types.o
+dftatom.o: dft.o drivers.o energies.o mesh.o ode1d.o reigen.o rpoisson.o \
+	states.o types.o utils.o
+drivers.o: constants.o dft.o dft_data.o energies.o mesh.o mixings.o ode1d.o \
+	states.o types.o
+energies.o: constants.o types.o utils.o
+mesh.o: types.o utils.o
+mixings.o: constants.o dft_data.o ode1d.o types.o utils.o
+ode1d.o: types.o utils.o
+ode1d_other.o: constants.o ode1d.o types.o utils.o
+rdirac.o: ode1d.o types.o utils.o
+rdirac_other.o: ode1d.o ode1d_other.o types.o utils.o
+reigen.o: energies.o ode1d.o rdirac.o rschroed.o types.o utils.o
+rpoisson.o: constants.o ode1d.o types.o utils.o
+rpoisson_other.o: constants.o ode1d.o ode1d_other.o types.o
+rschroed.o: ode1d.o types.o utils.o
+rschroed_other.o: ode1d.o ode1d_other.o types.o utils.o
+states.o: types.o utils.o
+utils.o: types.o

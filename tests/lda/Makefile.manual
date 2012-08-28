@@ -1,0 +1,4 @@
+PROG = conv_lda
+OBJS = conv_lda.o
+
+include ../Makefile.manual.mk

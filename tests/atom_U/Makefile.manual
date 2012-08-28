@@ -1,0 +1,4 @@
+PROG = F_atom_U
+OBJS = F_atom_U.o
+
+include ../Makefile.manual.mk

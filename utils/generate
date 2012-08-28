@@ -1,0 +1,12 @@
+#! /usr/bin/env python
+
+# Generates .pxd files for dftatom.
+
+from os.path import dirname, abspath
+from os import system
+root = dirname(dirname(abspath(__file__)))
+
+system("cd %s; utils/fparser src/c_dftatom.f90" % root)
+system("cd %s; mv src/c_dftatom.pxd dftatom/lib/" % root)
+print "'src/c_dftatom.h' updated"
+print "'dftatom/lib/c_dftatom.pxd' updated"

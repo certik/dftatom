@@ -1,0 +1,23 @@
+language: python
+python:
+  - 2.5
+  - 2.6
+  - 2.7
+before_install:
+  - sudo apt-get install gfortran
+install:
+  - pip install -q cython numpy --use-mirrors
+before_script:
+  - make -f Makefile.manual # Test manual makefiles
+  - git clean -dfx # Test CMake:
+  - cmake -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" -DWITH_PYTHON="yes" .
+  - make
+  - make install
+script:
+  - ctest -E conv
+  - PYTHONPATH=. dftatom/test_runner
+  - mkdir xx
+  - cd xx  # Make sure only the installed library is picked up
+  - LD_LIBRARY_PATH="$VIRTUAL_ENV"/lib/ ../dftatom/test_runner
+notifications:
+  email: false

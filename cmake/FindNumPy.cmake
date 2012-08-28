@@ -1,0 +1,13 @@
+execute_process(
+	COMMAND python -c "import numpy; print numpy.get_include()"
+	OUTPUT_VARIABLE PYTHON_SYS_PATH
+	)
+string(STRIP ${PYTHON_SYS_PATH} PYTHON_SYS_PATH)
+FIND_PATH(NUMPY_INCLUDE_PATH numpy/arrayobject.h
+    PATHS ${PYTHON_SYS_PATH}
+    NO_DEFAULT_PATH
+    NO_SYSTEM_ENVIRONMENT_PATH
+    )
+
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(NUMPY DEFAULT_MSG NUMPY_INCLUDE_PATH)

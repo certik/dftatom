@@ -1,0 +1,17 @@
+#! /bin/sh
+# A script to show how to install the library into Qsnake (http://qsnake.com/),
+# it can be trivially adapted for any other system (like Sage, Ubuntu, ...).
+
+if [ "$SPKG_LOCAL" = "" ]; then
+   echo "SPKG_LOCAL undefined ... exiting";
+   echo "Maybe run 'qsnake --shell'?"
+   exit 1
+fi
+
+set -e
+
+cmake -DCMAKE_INSTALL_PREFIX="$SPKG_LOCAL" \
+    -DWITH_PYTHON="yes" \
+    -DCMAKE_BUILD_TYPE="Release" .
+make
+make install

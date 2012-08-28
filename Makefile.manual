@@ -1,0 +1,35 @@
+# Modify these for your Fortran compiler:
+
+# GFortran
+F90 = gfortran
+F90FLAGS = -Wall -std=f95 -Wextra -Wimplicit-interface -fPIC
+# Debug flags:
+F90FLAGS += -g -fbounds-check
+# Release flags:
+#F90FLAGS += -O3 -march=native -ffast-math -funroll-loops
+
+# Intel ifort
+#F90 = ifort-12.0.191
+#F90FLAGS = -stand f95 -warn all
+# Debug flags:
+#F90FLAGS += -check all
+# Release flags:
+#F90FLAGS += -xHOST -O3 -no-prec-div -static
+
+# ----------------------------------------------------------------------------
+
+export F90
+export F90FLAGS
+
+all:
+	cd src; make -f Makefile.manual
+	cd tests; make -f Makefile.manual
+
+test:
+	cd tests; make -f Makefile.manual test
+	@echo
+	@echo "All tests passed."
+
+clean:
+	cd src; make -f Makefile.manual clean
+	cd tests; make -f Makefile.manual clean
