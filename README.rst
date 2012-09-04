@@ -115,24 +115,28 @@ CMake has many standard options, see ``man cmake``. For example
 you can set the compiler by doing (make sure you delete ``CMakeCache.txt`` if
 you ran CMake before)::
 
-    $ FC=ifort cmake .
+    FC=ifort cmake .
 
 You can set whether to build ``Debug`` or ``Release`` builds by::
 
-    $ cmake -DCMAKE_BUILD_TYPE=Release .
-    $ cmake -DCMAKE_BUILD_TYPE=Debug .
+    cmake -DCMAKE_BUILD_TYPE=Release .
+    cmake -DCMAKE_BUILD_TYPE=Debug .
 
 The default compiler options that will be used for each build are specified for
 gfortran and ifort in ``cmake/UserOverride.cmake`` (for other compilers, the
 default CMake options will be used). You can set your own compiler options
 for each build by::
 
-    $ cmake -DCMAKE_Fortran_FLAGS_RELEASE="-O3" .
-    $ cmake -DCMAKE_Fortran_FLAGS_DEBUG="-g" .
+    cmake -DCMAKE_Fortran_FLAGS_RELEASE="-O3" .
+    cmake -DCMAKE_Fortran_FLAGS_DEBUG="-g" .
 
 Besides the standard options above, we provide several options specific for
 dftatom. By default, only Fortran code is compiled. To enable C and Python
-bindings, you have to use CMake and set the ``WITH_PYTHON`` CMake variable to
+bindings, first install Cython and NumPy, for example in Ubuntu 12.04::
+
+    apt-get install cython python-numpy
+
+and then you have to use CMake and set the ``WITH_PYTHON`` CMake variable to
 ``yes``. You can either do::
 
     cmake -DWITH_PYTHON=yes .
@@ -148,7 +152,7 @@ To only enable the C interface (but not Python), set the variable
 To run Python API tests (to make sure that things got compiled properly and
 that the Python module can be imported)::
 
-    $ dftatom/test_runner
+    $ PYTHONPATH=. dftatom/test_runner
     ============================= test process starts ==============================
     executable:   /home/ondrej/repos/qsnake/local/bin/python  (2.6.4-final-0)
 
@@ -156,6 +160,15 @@ that the Python module can be imported)::
 
     =================== tests finished: 4 passed in 1.90 seconds ===================
 
+This will use the ``dftatom`` module from the current directory (that's why we
+need to add ``.`` to ``PYTHONPATH`` so that Python can find the module). To
+install the module into a different directory, do for example::
+
+    cmake -DWITH_PYTHON=yes -DCMAKE_INSTALL_PREFIX="$HOME/usr" -DPYTHON_INSTALL_PATH="$HOME/usr/lib/python2.7/site-packages" .
+    make
+    make install
+
+This will install it into ``~/usr``.
 
 Usage
 -----
@@ -170,7 +183,7 @@ There are
 also a few Python examples in the examples/ directory, you can execute them for
 example using::
 
-    python examples/atom_U.py
+    PYTHONPATH=. python examples/atom_U.py
 
 
 Development
@@ -181,13 +194,13 @@ make sure you run::
 
     $ utils/generate
     'src/c_dftatom.h' updated
-    'dftatom/rdirac/rdirac.pxd' updated
+    'dftatom/lib/c_dftatom.pxd' updated
 
 This will update the C ``.h`` file as well as Cython ``.pxd`` file. Then use it
 from C or Cython as usual, typically you probably want to export the new
 functionality to Python by updating the ``.pyx`` files and then just::
 
-    $ make
+    make
 
 The Structure Of The Program
 ----------------------------
