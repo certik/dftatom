@@ -19,5 +19,7 @@ script:
   - mkdir xx
   - cd xx  # Make sure only the installed library is picked up
   - LD_LIBRARY_PATH="$VIRTUAL_ENV"/lib/ ../dftatom/test_runner
+  - LD_LIBRARY_PATH="$VIRTUAL_ENV"/lib/ python ../examples/atom_B.py
+  - LD_LIBRARY_PATH="$VIRTUAL_ENV"/lib/ python ../examples/atom_U.py
 notifications:
   email: false
