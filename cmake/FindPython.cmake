@@ -30,9 +30,11 @@ FIND_LIBRARY(PYTHON_LIBRARY NAMES python${PYTHON_VERSION}
 
 execute_process(
 	COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
-	OUTPUT_VARIABLE PYTHON_INSTALL_PATH
+	OUTPUT_VARIABLE PYTHON_INSTALL_PATH_tmp
 	)
-string(STRIP ${PYTHON_INSTALL_PATH} PYTHON_INSTALL_PATH)
+string(STRIP ${PYTHON_INSTALL_PATH_tmp} PYTHON_INSTALL_PATH_tmp)
+set(PYTHON_INSTALL_PATH ${PYTHON_INSTALL_PATH_tmp}
+    CACHE BOOL "Python install path")
 message(STATUS "Python install path: ${PYTHON_INSTALL_PATH}")
 
 INCLUDE(FindPackageHandleStandardArgs)
