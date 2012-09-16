@@ -5,7 +5,7 @@ use dftatom, only: dp, thomas_fermi_potential, E_nl
 use dft_data, only: dft_data_t
 use dft, only: KS_step
 use mixings, only: mixing_anderson
-use utils, only: assert, stop_error
+use utils, only: assert, stop_error, newunit
 implicit none
 
 ! Mesh parameters:
@@ -103,7 +103,7 @@ print *, "The first 10 values of the radial charge density:"
 print *, density(:10)
 
 ! Save the radial grid and density
-!open(newunit=u, file="density.txt", status="replace")
+!open(newunit(u), file="density.txt", status="replace")
 !write(u, "((es23.16, ' ', es23.16))") (R(i), density(i), i=1, size(R))
 !close(u)
 
