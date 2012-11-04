@@ -3,7 +3,7 @@ use dftatom, only: dp, mesh_exp, mesh_exp_deriv, thomas_fermi_potential, E_nl
 use dft_data, only: dft_data_t
 use dft, only: KS_step
 use mixings, only: mixing_anderson
-use utils, only: assert
+use utils, only: assert, newunit
 implicit none
 
 ! Mesh parameters:
@@ -104,7 +104,7 @@ print *, "The first 10 values of the Hartree potential (V_h):"
 print *, V_h(:10)
 
 ! Save the radial grid, density, V_h
-open(newunit=u, file="density.txt", status="replace")
+open(newunit(u), file="density.txt", status="replace")
 write(u, "((es23.16, ' ', es23.16, ' ', es23.16))") (R(i), density(i), V_h(i), &
         i=1, size(R))
 close(u)
