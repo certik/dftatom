@@ -1,5 +1,5 @@
-program uranium
-! Calculates Hydrogen like relativistic energies for Z=92 (U)
+program boron
+! Calculates Hydrogen like relativistic energies for Z=5 (B)
 !
 ! The purpose of this test is to check that:
 ! a) all U energies can converge to 1e-6
