@@ -21,13 +21,15 @@ function rpoisson_outward_pc(R, Rp, rho) result(V)
 !
 ! Uses predictor corrector Adams method.
 !
-! It rewrites it to (r*V)'' = -4*pi*rho*r, converts to uniform grid:
-!   u1 = r*V
-!   u2 = (r*V)'
+! It rewrites it to the equivalent system of first order ODEs on a uniform
+! grid:
+!   u1 = V
+!   u2 = V'
 !   u1p = u2 * Rp
-!   u2p = -4*pi*rho*R * Rp
-! and integrates outward using Adams method. This gives u1=r*V and
-! at the end we divide by "r": V = u1/r
+!   u2p = -(4*pi*rho + 2*u2/r) * Rp
+! and integrates outward using Adams method. The initial conditions are:
+!   V (R(1)) = u1(1) = 4*pi * \int r * rho(r) dr
+!   V'(R(1)) = u2(1) = 0
 real(dp), intent(in) :: R(:), Rp(:), rho(:)
 real(dp) :: V(size(R))
 
@@ -60,15 +62,16 @@ V = u1
 end function
 
 subroutine rpoisson_outward_rk4(density, density_mid, R, V0, V0d, V, Vd)
-! Solves V''(r) + 2/r*V'(r) = -4*pi*density
-! with initial conditions V(R(1)) = V0 and V'(R(1)) = V0d
-! using 4th order Runge-Kutta method.
-! Returns V (value) and Vd (derivative)
-real(dp), intent(in), dimension(:) :: density, density_mid
-real(dp), intent(in), dimension(:) :: R
-real(dp), intent(in) :: V0
-real(dp), intent(in) :: V0d
-real(dp), intent(out), dimension(:) :: V, Vd
+! Solves V''(r) + 2/r*V'(r) = -4*pi*density (in this form) with initial
+! conditions V(R(1)) = V0 and V'(R(1)) = V0d using 4th order Runge-Kutta method
+! by rewriting it to the equivalent first order ODEs (see the documentation
+! of rk4_integrate3() for more details). Returns V (value) and Vd (derivative).
+real(dp), intent(in), dimension(:) :: density, density_mid ! density at the
+    ! mesh points R and at midpoints
+real(dp), intent(in), dimension(:) :: R ! radial grid
+real(dp), intent(in) :: V0  ! value of V(r) at r=R(1)
+real(dp), intent(in) :: V0d ! value of V'(r) at r=R(1)
+real(dp), intent(out), dimension(:) :: V, Vd  ! V(r) and V'(r) on the grid R
 
 real(dp) :: y(2)
 real(dp), dimension(size(R)) :: C1, C2
