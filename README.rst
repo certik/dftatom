@@ -108,7 +108,7 @@ and manual Makefiles::
     make: *** [test] Error 2
 
 
-CMake Options (Python and C Bindings and Release Build)
+CMake Options (Python and C Bindings, Release Build, Lapack)
 -------------------------------------------------------
 
 CMake has many standard options, see ``man cmake``. For example
@@ -169,6 +169,16 @@ install the module into a different directory, do for example::
     make install
 
 This will install it into ``~/usr``.
+
+The ``double_min`` test depends on Lapack, so it is turned off by default.
+You can enable it by::
+
+    cmake -DWITH_LAPACK=yes
+    make
+
+You need to have ``lapack`` and ``blas`` libraries. If non-standard linking is
+required, modify the link options in the file
+``tests/double_min/CMakeLists.txt`` by hand.
 
 Usage
 -----
