@@ -1,4 +1,8 @@
 program rmin_conv
+
+! Calculates rmin convergence for the lowest 26 eigenvalues of the double
+! minimum potential. Results are saved to 'energies_rmin.txt'.
+
 use dftatom
 use utils, only: savetxt
 use interpolation, only: spline3, loadtxt

@@ -1,4 +1,13 @@
 program fd
+
+! Calculates the the lowest 26 eigenvalues of the double minimum potential
+! using the finite difference (FD) method as described in [1].
+! The interpolated potential is saved to 'potential_grid.txt'.
+
+! [1] Tobin, F. L., & Hinze, J. (1975). The eigenvalue problem for a double
+! minimum potential. The Journal of Chemical Physics, 63(2), 1034.
+! doi:10.1063/1.431399
+
 use types, only: dp
 use utils, only: stop_error, newunit, savetxt
 use mesh, only: mesh_exp
@@ -53,8 +62,8 @@ contains
 
 function radial_schroedinger_fd(d, U, mu) result(lam)
 ! Solves the radial Schroedinger equation with l=0 and potential 'U' given on a
-! uniform mesh with element size 'd' using finite differences. Returns all
-! eigenvalues in ascending order.
+! uniform mesh with element size 'd' using finite differences as described in
+! [1]. Returns all eigenvalues in ascending order.
 real(dp), intent(in) :: d  ! The element size of a uniform mesh
 real(dp), intent(in) :: U(:) ! The potential given on a uniform mesh
 real(dp), intent(in) :: mu ! The particle mass in Hartree atomic units (use
