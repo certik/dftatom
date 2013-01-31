@@ -25,6 +25,8 @@ set(WITH_C_INTERFACE no
 if (WITH_PYTHON)
     set(WITH_C_INTERFACE yes)
 endif ()
+set(WITH_LAPACK no
+    CACHE BOOL "Build tests that depend on Lapack")
 
 if (CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
     # gfortran
@@ -67,3 +69,4 @@ if (WITH_PYTHON)
 endif ()
 message("With C interface: ${WITH_C_INTERFACE}")
 message("With Python: ${WITH_PYTHON}")
+message("With Lapack: ${WITH_LAPACK}")
