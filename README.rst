@@ -179,12 +179,12 @@ example the Uranium LDA::
     cd tests/atom_U
     ./F_atom_U
 
-There are
-also a few Python examples in the examples/ directory, you can execute them for
-example using::
+There are also a few Python examples in the examples/ directory, you can
+execute them for example using::
 
     PYTHONPATH=. python examples/atom_U.py
 
+Read "The Structure Of The Program" section below for more information.
 
 Development
 -----------
@@ -213,6 +213,20 @@ for solving ODE), ``reigen`` solves the radial Schrödinger/Dirac eigenproblem,
 ``drivers`` contains higher level DFT subroutines and the rest of modules are
 auxiliary modules.  Description of subroutines arguments is in the comments in
 the code.
+
+In order to see how to supply an (external) potential, look into the simple
+examples in ``tests/pseudopotential/`` or ``tests/oscillator/``, where the
+potential is constructed in the main program and then dftatom is used to solve
+it. There are several configuration options that can be supplied, see the
+documentation of the ``solve_radial_eigenproblem`` subroutine in
+``src/reigen.f90``. For high level drivers for density functional calculations
+on atoms, use the subroutines ``atom_lda`` and ``atom_rlda`` from
+``src/drivers.f90``. To access the atomic orbitals (radial wavefunctions), see
+for example the program ``tests/atom_U/F_atom_U.f90`` which prints the orbitals
+--- simply use the ``orbitals`` array returned from ``atom_lda`` which gives
+values of the orbitals on the radial mesh in the ``R`` array.
+
+Description of all modules follows:
 
 rschroed.f90
     Routines in this module solve the radial Schroedinger equation outward and
