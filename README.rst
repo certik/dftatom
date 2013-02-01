@@ -215,30 +215,41 @@ functionality to Python by updating the ``.pyx`` files and then just::
 The Structure Of The Program
 ----------------------------
 
+The structure of the Fortran 95 modules are described here. The relations of
+the most important subroutines can be summarized in a dependency graph:
+
 .. image:: dependency_graph.png
     :alt: Dependency graph
 
+The ``drivers`` module contains higher level DFT subroutines ``atom_lda`` and
+``atom_rlda`` that one can use to solve atoms. The atomic orbitals (radial
+wavefunctions) can be accessed in the argument ``orbitals`` of these functions.
+They are given on the radial mesh returned by the argument ``R`` and are
+normalized according to the equations (9) and (20) in the manuscript. These
+wavefunctions can then be used to construct interaction matrix elements. The
+radial density and Kohn-Sham energies are also returned as arguments
+``density`` and ``ks_energies``.  Other parameters affecting the results that
+can be set are mesh parameters, atomic configuration, accuracy of the
+eigenproblem as well as selfconsistency iterations and whether or not to use
+the perturbation correction, see the definitions of the subroutines in
+``drivers.f90`` for more details. As an example of usage, see for instance the
+program ``tests/atom_U/F_atom_U.f90`` which prints the orbitals and energies.
 
-The structure of the Fortran 95 modules are described here.  The main modules
-are ``rschroed``, ``rdirac`` and ``rpoisson`` that handle the radial
-integration (they use the ``ode1d`` module that contains some common utilities
-for solving ODE), ``reigen`` solves the radial Schrödinger/Dirac eigenproblem,
-``dft`` module contains utilities to solves the Kohn-Sham equations,
-``drivers`` contains higher level DFT subroutines and the rest of modules are
-auxiliary modules.  Description of subroutines arguments is in the comments in
-the code.
+The ``dft`` module contains utilities to solve the Kohn-Sham equations.
 
-In order to see how to supply an (external) potential, look into the simple
-examples in ``tests/pseudopotential/`` or ``tests/oscillator/``, where the
-potential is constructed in the main program and then dftatom is used to solve
-it. There are several configuration options that can be supplied, see the
-documentation of the ``solve_radial_eigenproblem`` subroutine in
-``src/reigen.f90``. For high level drivers for density functional calculations
-on atoms, use the subroutines ``atom_lda`` and ``atom_rlda`` from
-``src/drivers.f90``. To access the atomic orbitals (radial wavefunctions), see
-for example the program ``tests/atom_U/F_atom_U.f90`` which prints the orbitals
---- simply use the ``orbitals`` array returned from ``atom_lda`` which gives
-values of the orbitals on the radial mesh in the ``R`` array.
+The radial Schrödinger/Dirac integration is performed by the ``reigen`` module
+using the ``solve_radial_eigenproblem`` subroutine, which accepts the
+(external) potential as an argument ``V`` specified as an array of values on a
+mesh (argument ``R``).  There are several configuration options that can be
+supplied, see the documentation of the ``solve_radial_eigenproblem`` subroutine
+in ``reigen.f90``.  Example of usage is given in the simple tests in
+``tests/pseudopotential/`` or ``tests/oscillator/``, where the potential and
+mesh is constructed in the main program.
+
+Finally, the low level modules ``rschroed``, ``rdirac`` and ``rpoisson`` handle
+the radial integration (they use the ``ode1d`` module that contains some common
+utilities for solving ODE). Detailed documentation of these subroutines is in
+the comments in the code.
 
 Description of all modules follows:
 
