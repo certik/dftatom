@@ -1,10 +1,10 @@
-Routines for Radial Integration of Dirac and Schrödinger Equations
-==================================================================
+dftatom: Routines for Radial Integration of Dirac, Schrödinger, and Poisson Equations
+=====================================================================================
 
-This library implements accurate and fast radial Schrödinger and Dirac shooting
-method solvers. They work with any grid and any numeric potential. In
-addition, it also implements a radial Poisson solver and density functional
-theory self consistency cycle.
+This library implements accurate and efficient radial Schrödinger and Dirac
+shooting-method solvers. They work with any grid and any numerical potential.
+In addition, it also implements a radial Poisson solver and density functional
+theory self-consistency cycle.
 
 Accuracy
 --------
@@ -14,9 +14,9 @@ to at least 1e-8 Ha accuracy (with double precision of approximately 16
 significant digits) for all eigenvalues and total DFT energies for all atoms up
 to Uranium (Z=92).
 
-The converged nonrelativistic and relativistic results agree with NIST within
-the accuracy of the NIST results (2e-6 Ha in eigenvalues and 1e-6 Ha in total
-energies).
+The converged nonrelativistic and relativistic results agree with NIST
+benchmarks to the stated accuracy of those benchmarks (2e-6 Ha in eigenvalues
+and 1e-6 Ha in total energies).
 
 http://physics.nist.gov/PhysRefData/DFTdata/Tables/ptable.html
 
@@ -194,7 +194,7 @@ execute them for example using::
 
     PYTHONPATH=. python examples/atom_U.py
 
-Read "The Structure Of The Program" section below for more information.
+Read "Structure Of The Program" section below for more information.
 
 Development
 -----------
@@ -212,10 +212,10 @@ functionality to Python by updating the ``.pyx`` files and then just::
 
     make
 
-The Structure Of The Program
-----------------------------
+Structure Of The Program
+------------------------
 
-The structure of the Fortran 95 modules are described here. The relations of
+The structure of the Fortran 95 modules is described here. The relations of
 the most important subroutines can be summarized in a dependency graph:
 
 .. image:: dependency_graph.png
@@ -242,16 +242,16 @@ using the ``solve_radial_eigenproblem`` subroutine, which accepts the
 (external) potential as an argument ``V`` specified as an array of values on a
 mesh (argument ``R``).  There are several configuration options that can be
 supplied, see the documentation of the ``solve_radial_eigenproblem`` subroutine
-in ``reigen.f90``.  Example of usage is given in the simple tests in
+in ``reigen.f90``.  Examples of usage are given in the simple tests in
 ``tests/pseudopotential/`` or ``tests/oscillator/``, where the potential and
 mesh is constructed in the main program.
 
 Finally, the low level modules ``rschroed``, ``rdirac`` and ``rpoisson`` handle
 the radial integration (they use the ``ode1d`` module that contains some common
-utilities for solving ODE). Detailed documentation of these subroutines is in
-the comments in the code.
+utilities for solving ordinary differential equations). Detailed documentation
+of these subroutines is given in the comments in the code.
 
-Description of all modules follows:
+A description of all modules follows:
 
 rschroed.f90
     Routines in this module solve the radial Schroedinger equation outward and
