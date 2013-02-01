@@ -109,7 +109,7 @@ and manual Makefiles::
 
 
 CMake Options (Python and C Bindings, Release Build, Lapack)
--------------------------------------------------------
+------------------------------------------------------------
 
 CMake has many standard options, see ``man cmake``. For example
 you can set the compiler by doing (make sure you delete ``CMakeCache.txt`` if
@@ -214,6 +214,10 @@ functionality to Python by updating the ``.pyx`` files and then just::
 
 The Structure Of The Program
 ----------------------------
+
+.. image:: dependency_graph.png
+    :alt: Dependency graph
+
 
 The structure of the Fortran 95 modules are described here.  The main modules
 are ``rschroed``, ``rdirac`` and ``rpoisson`` that handle the radial
