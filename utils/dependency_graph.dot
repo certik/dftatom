@@ -1,0 +1,60 @@
+/*
+    This source code generates the dependency graph using the Graphviz package
+    (http://www.graphviz.org).
+    Compile with:
+
+       dot -Tpng dependency_graph.dot -o dependency_graph.png
+*/
+
+digraph G {
+    size = "8, 8";
+    subgraph cluster0 {
+        label="drivers.f90"
+        atom_lda;
+        atom_rlda;
+    }
+    subgraph cluster1 {
+        label="dft.f90"
+        KS_step;
+    }
+    subgraph cluster2 {
+        label="reigen.f90"
+        solve_radial_eigenproblem;
+    }
+    subgraph cluster3 {
+        label="rschroed.f90"
+        schroed_outward_adams;
+        schroed_inward_adams;
+    }
+    subgraph cluster4 {
+        label="rdirac.f90"
+        dirac_outward_adams;
+        dirac_inward_adams;
+    }
+    subgraph cluster5 {
+        label="rpoisson.f90"
+        rpoisson_outward_pc;
+    }
+    /* The graph becomes too complicated:
+    subgraph cluster6 {
+        label="mesh.f90"
+        mesh_exp;
+        mesh_exp_deriv;
+    }
+    subgraph cluster7 {
+        label="states.f90"
+        get_atomic_states_nonrel;
+        get_atomic_states_rel;
+    }
+    atom_lda -> {get_atomic_states_nonrel; mesh_exp; mesh_exp_deriv}
+    atom_rlda -> {get_atomic_states_rel; mesh_exp; mesh_exp_deriv}
+    */
+    atom_lda -> KS_step;
+    atom_rlda -> KS_step;
+    KS_step -> {solve_radial_eigenproblem; rpoisson_outward_pc}
+    solve_radial_eigenproblem -> {schroed_outward_adams; schroed_inward_adams}
+    solve_radial_eigenproblem -> {dirac_outward_adams; dirac_inward_adams}
+
+    // Invisible edge, for better positioning
+    schroed_inward_adams -> dirac_inward_adams[style="invis"];
+}
