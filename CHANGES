@@ -1,0 +1,24 @@
+ver: 1.0.2
+
+Added a test "double_min" for testing a double minimum potential (PR #4).
+
+README improvements:
+
+* dependency graph
+* more detailed usage
+
+Improved documentation in rpoisson.f90.
+
+Fixed a dependency bug in CMake files.
+
+Corrected the name of some programs in tests to match the filename.
+
+-------------------------------------------------------------------------------
+ver: 1.0.1
+
+Allow to change PYTHON_INSTALL_PATH in CMake
+
+-------------------------------------------------------------------------------
+ver: 1.0
+
+Initial version.
