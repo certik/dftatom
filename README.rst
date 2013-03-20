@@ -6,6 +6,18 @@ shooting-method solvers. They work with any grid and any numerical potential.
 In addition, it also implements a radial Poisson solver and density functional
 theory self-consistency cycle.
 
+Article
+-------
+
+Detailed description of methods, convergence and implementation is in the
+following article:
+
+Ondřej Čertík, John E. Pask, Jiří Vackář, dftatom: A robust and general
+Schrödinger and Dirac solver for atomic structure calculations, Computer
+Physics Communications, Available online 18 February 2013, ISSN 0010-4655,
+`10.1016/j.cpc.2013.02.014 <http://dx.doi.org/10.1016/j.cpc.2013.02.014>`_.
+Preprint: `arXiv:1209.1752 <http://arxiv.org/abs/1209.1752>`_.
+
 Accuracy
 --------
 
