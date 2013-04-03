@@ -14,7 +14,8 @@ following article:
 
 Ondřej Čertík, John E. Pask, Jiří Vackář, dftatom: A robust and general
 Schrödinger and Dirac solver for atomic structure calculations, Computer
-Physics Communications, Available online 18 February 2013, ISSN 0010-4655,
+Physics Communications, Volume 184, Issue 7, July 2013, Pages 1777-1791, ISSN
+0010-4655,
 `10.1016/j.cpc.2013.02.014 <http://dx.doi.org/10.1016/j.cpc.2013.02.014>`_.
 Preprint: `arXiv:1209.1752 <http://arxiv.org/abs/1209.1752>`_.
 
