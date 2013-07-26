@@ -12,7 +12,7 @@ integer, parameter :: NN = 3000
 
 real(dp), parameter :: c = 137.035999037_dp, eps = 1e-6_dp
 integer :: converged, n, l, i
-real(dp) :: R(NN+1), V(size(r)), E, y(size(r)), Rp(NN+1)
+real(dp) :: R(NN+1), V(size(r)), E, P(size(r)), Q(size(r)), Rp(NN+1)
 
 integer, parameter :: relat = 0
 integer :: n_orb
@@ -40,7 +40,7 @@ do i = 1, n_orb
     n = no(i)
     l = lo(i)
     call solve_radial_eigenproblem(n, l, E_initial(i), eps, 100, &
-        R, Rp, V, Z, c, relat, .true., -10000._dp, 0._dp, converged, E, y)
+        R, Rp, V, Z, c, relat, .true., -10000._dp, 0._dp, converged, E, P, Q)
     print "(I3, I3, F15.6, F15.6, ES10.2)", n, l, E, E_initial(i), 0.0_dp
 end do
 deallocate(no, lo, fo)

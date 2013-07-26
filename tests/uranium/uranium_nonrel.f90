@@ -14,7 +14,7 @@ integer, parameter :: NN = 5000
 
 real(dp), parameter :: c = 137.035999037_dp, eps = 1e-6_dp
 integer :: n, l, relat, converged, i
-real(dp) :: r(NN+1), u(size(r)), Ein, E, E_exact, error, y(size(r))
+real(dp) :: r(NN+1), u(size(r)), Ein, E, E_exact, error, P(size(r)), Q(size(r))
 real(dp) :: Rp(NN+1)
 integer :: n_orb
 integer, pointer :: no(:), lo(:)
@@ -40,7 +40,7 @@ do i = 1, n_orb
     E_exact = E_nl(c, n, l, Z, relat)
     Ein = -100
     call solve_radial_eigenproblem(n, l, Ein, eps, 100, R, Rp, u, Z, c, &
-        relat, .true., -10000._dp, 0._dp, converged, E, y)
+        relat, .true., -10000._dp, 0._dp, converged, E, P, Q)
     error = abs(E - E_exact)
     if (converged /= 0) call stop_error("Not converged")
     print "(I3, I3, F15.6, F15.6, ES10.2)", n, l, E, E_exact, error

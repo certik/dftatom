@@ -12,7 +12,7 @@ integer, parameter :: NN = 3000
 real(dp), parameter :: c = 137.035999037_dp, eps = 1e-9_dp
 integer :: n, l, relat, converged
 real(dp) :: R(NN+1), u(size(r)), Ein, E, E_exact, error
-real(dp) :: y(size(r)), Rp(NN+1)
+real(dp) :: P(size(R)), Q(size(R)), Rp(NN+1)
 logical, parameter :: perturb = .true.
 
 
@@ -31,8 +31,8 @@ do n = 1, 7
         E_exact = - Z**2 / (2.0_dp * n**2)
         Ein = -1000
         relat = 0
-        call solve_radial_eigenproblem(n, l, Ein, eps, 100, &
-            R, Rp, u, Z, c, relat, perturb, -5000._dp, 0._dp, converged, E, Y)
+        call solve_radial_eigenproblem(n, l, Ein, eps, 100, R, Rp, u, Z, c, &
+            relat, perturb, -5000._dp, 0._dp, converged, E, P, Q)
         error = abs(E -E_exact)
         if (converged /= 0) call stop_error("Not converged")
         print "(I3, I3, F15.6, F15.6, ES10.2)", n, l, E, E_exact, error

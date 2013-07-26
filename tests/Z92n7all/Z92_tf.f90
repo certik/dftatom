@@ -12,7 +12,7 @@ integer, parameter :: NN = 3000
 
 real(dp), parameter :: c = 137.035999037_dp, eps = 1e-6_dp
 integer :: converged, n, l, Z_eff
-real(dp) :: R(NN+1), V(size(r)), E, y(size(r)), E_initial
+real(dp) :: R(NN+1), V(size(r)), E, P(size(r)), Q(size(r)), E_initial
 real(dp) :: Rp(NN+1)
 
 integer, parameter :: relat = 0
@@ -32,8 +32,8 @@ do n = 1, 7
         Z_eff = Z - 2*((n-1)**2 + 2*l+1)
         if (Z_eff <= 0) Z_eff = 1
         E_initial = -Z_eff**2 * 1.0_dp/(2*n**2)
-        call solve_radial_eigenproblem(n, l, E_initial, eps, 100, &
-            R, Rp, V, Z, c, relat, .true., -10000._dp, 0._dp, converged, E, y)
+        call solve_radial_eigenproblem(n, l, E_initial, eps, 100, R, Rp, &
+            V, Z, c, relat, .true., -10000._dp, 0._dp, converged, E, P, Q)
         print "(I3, I3, F15.6, F15.6)", n, l, E, E_initial
     end do
 end do
