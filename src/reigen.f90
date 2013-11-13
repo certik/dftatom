@@ -116,9 +116,9 @@ is_E_above = nods_actual > n-l-1
 end function
 
 subroutine solve_radial_eigenproblem(n, l, Ein, eps, max_iter, &
-    R, Rp, V, Z, c, relat, perturb, Emin_init, Emax_init, converged, E, Y)
-! Solves the radial Dirac (Schrodinger) equation and returns the eigen value
-! (E) and normalized eigenvector (Y) for the given "n" and "l".
+    R, Rp, V, Z, c, relat, perturb, Emin_init, Emax_init, converged, E, P, Q)
+! Solves the radial Dirac (Schroedinger) equation and returns the eigenvalue
+! (E) and normalized eigenvector (P, Q) for the given "n" and "l".
 !
 !    Finds the wavefunction with defined "n" and "l". The potential is "V".
 !    relat ... 0 nonrelat (runge-kutta)
@@ -142,24 +142,25 @@ subroutine solve_radial_eigenproblem(n, l, Ein, eps, max_iter, &
 !        energy is not in the range, the "converged" variable will be equal to
 !        either 9 (Emin_init too big) or 10 (Emin_init too small).
 !
-!    returns a wavefunction in Y (i.e., not y*r, but y). If it doesn't
-!    converge, then converged /= 0, and E and Y are undefined
+!    Returns eigenvalue E and the normalized wavefunctions P, Q. If it doesn't
+!    converge, then converged /= 0, and E is undefined (P and Q then contains
+!    the latest integration of the shooting solver if available --- this is
+!    useful for debugging why it did not converged).
 !
 !    Conceptually, the algorithm is to use bisection to converge energy (using
 !    the number of nodes as the criterion) until we get close enough, so that
 !    the perturbation theory starts to converge, and then use perturbation to
-!    finish it. If perturbation doesn't converge, we need to fail over to
+!    finish it. If perturbation does not converge, we need to fail over to
 !    bisection.
 integer, intent(in) :: n, l, relat, Z, max_iter
 real(dp), intent(in) :: R(:), Rp(:), V(:), eps, Ein, c
 logical, intent(in) :: perturb
 real(dp), intent(in) :: Emin_init, Emax_init
 integer, intent(out) :: converged
-real(dp), intent(out) :: Y(:), E
+real(dp), intent(out) :: P(:), Q(:), E
 
 
 real(dp) :: Emin, Emax, dE, Pr(size(R)), Qr(size(R)), factor, S
-real(dp) :: P(size(R)), Q(size(R))
 integer :: minidx, ctp, iter
 logical :: isbig
 integer :: nnodes
@@ -319,24 +320,25 @@ if (iter == max_iter) then
     converged = 2
     return
 end if
-converged = 0
-Y = convert_PQ_to_R(R, Rp, P, Q, relat)
-end subroutine
 
-
-function convert_PQ_to_R(R, Rp, P, Q, relat) result(Y)
-! Converts P, Q into R(r) depending on 'relat' and normalizes it
-real(dp), intent(in) :: R(:), Rp(:), P(:), Q(:)
-real(dp) :: Y(size(R))
-integer, intent(in) :: relat
+! Normalize the wavefunction:
 if (relat == 0) then
-    Y = P
+    S = integrate(Rp, P**2)
 else
-    Y = sqrt(P**2 + Q**2)
+    S = integrate(Rp, P**2 + Q**2)
 end if
-call normalize(Rp, Y)
-Y = Y / R
-end function
+S = sqrt(abs(S))
+if (S > 0) then
+    P = P / S
+    Q = Q / S
+else
+    ! This would happen if the function is zero, but we already check this
+    ! above (converged == 4), so we fail laudly here.
+    call stop_error("solve_radial_eigenproblem: zero function")
+end if
+
+converged = 0
+end subroutine
 
 integer function find_ctp(V, E) result(ctp)
 ! Finds the classical turning point for the potential 'V' and energy 'E'

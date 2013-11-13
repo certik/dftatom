@@ -20,8 +20,8 @@ def test_nonrelat():
     energies = []
     for n in range(8):
         for l in range(n):
-            E, y = solve_radial_eigenproblem(0.0, n, l, -1, 1e-11, 100, V_tot,
-                            R, Rp, Z, relat, False, -10000, 0)
+            E, P, Q = solve_radial_eigenproblem(0.0, n, l, -1, 1e-11, 100,
+                    V_tot, R, Rp, Z, relat, False, -10000, 0)
             energies.append(E)
 
 def test_relat():
@@ -42,7 +42,7 @@ def test_relat():
             if l > 0:
                 relats.append(3)
             for relat in relats:
-                E, y = solve_radial_eigenproblem(c, n, l, relat, 1e-11, 100,
+                E, P, Q = solve_radial_eigenproblem(c, n, l, relat, 1e-11, 100,
                         V_tot, R, Rp, Z, relat, False, -10000, 0)
                 energies.append(E)
 

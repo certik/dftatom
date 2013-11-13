@@ -12,7 +12,8 @@ integer, parameter :: NN = 5000
 
 real(dp), parameter :: c = 137.03599907_dp, eps = 1e-10_dp
 integer :: n, n2, l, relat, converged, relat_max, k, kappa
-real(dp) :: r(NN+1), u(size(r)), Ein, E, E_exact_nonrel, error, Y(size(r))
+real(dp) :: r(NN+1), u(size(r)), Ein, E, E_exact_nonrel, error, P(size(r)), &
+    Q(size(r))
 real(dp) :: Rp(NN+1)
 real(dp) :: Emin_init, Emax_init
 real(dp) :: E_exact(7, -7:7) ! E_exact(n, kappa)
@@ -128,7 +129,7 @@ do n = 1, 7
                 n2 = n
             end if
             call solve_radial_eigenproblem(n2, l, Ein, eps, 100, R, Rp, u, &
-                Z, c, relat, .false., Emin_init, Emax_init, converged, E, y)
+                Z, c, relat, .false., Emin_init, Emax_init, converged, E, P, Q)
             error = abs(E - E_exact(n, kappa))
             if (converged /= 0) call stop_error("Not converged")
             print "(I3, I3, I3, I3, F17.8, F17.8, ES10.2, F17.8)", n, l, k, &

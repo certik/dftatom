@@ -41,21 +41,21 @@ V = rpoisson_outward_pc(R, Rp, rho)
 end subroutine
 
 subroutine dftatom_solve_radial_eigenproblem(n_array, n, l, Ein, eps, &
-    max_iter, R, &
-    Rp, V, Z, c, relat, perturb, Emin_init, Emax_init, converged, E, Y) bind(c)
+    max_iter, R, Rp, V, Z, c, relat, perturb, Emin_init, Emax_init, &
+    converged, E, P, Q) bind(c)
 integer(c_int), intent(in) :: n_array, n, l, relat, Z, max_iter
 real(c_double), intent(in) :: R(n_array), Rp(n_array), V(n_array), eps, Ein, c
 logical(c_bool), intent(in) :: perturb
 real(c_double), intent(in) :: Emin_init, Emax_init
 integer(c_int), intent(out) :: converged
-real(c_double), intent(out) :: Y(n_array), E
+real(c_double), intent(out) :: P(n_array), Q(n_array), E
 
 logical :: perturb2
 perturb2 = perturb
 
 call solve_radial_eigenproblem(n, l, Ein, eps, max_iter, &
     R, Rp, V, Z, c, &
-    relat, perturb2, Emin_init, Emax_init, converged, E, Y)
+    relat, perturb2, Emin_init, Emax_init, converged, E, P, Q)
 end subroutine
 
 subroutine dftatom_integrate_rproblem_outward(N, l, E, R, Rp, V, Z, c, relat, &

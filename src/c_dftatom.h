@@ -13,7 +13,7 @@ extern "C" {
 void dftatom_get_vxc(int *n, double *R, double *rho, bool *relat, double *c, double *V);
 void dftatom_integrate(int *n, double *x, double *f, double *s);
 void dftatom_integrate_radial_poisson(int *n, double *R, double *Rp, double *rho, double *V);
-void dftatom_solve_radial_eigenproblem(int *n_array, int *n, int *l, double *Ein, double *eps, int *max_iter, double *R, double *Rp, double *V, int *Z, double *c, int *relat, bool *perturb, double *Emin_init, double *Emax_init, int *converged, double *E, double *Y);
+void dftatom_solve_radial_eigenproblem(int *n_array, int *n, int *l, double *Ein, double *eps, int *max_iter, double *R, double *Rp, double *V, int *Z, double *c, int *relat, bool *perturb, double *Emin_init, double *Emax_init, int *converged, double *E, double *P, double *Q);
 void dftatom_integrate_rproblem_outward(int *N, int *l, double *E, double *R, double *Rp, double *V, int *Z, double *c, int *relat, double *P, double *Q, int *imax);
 void dftatom_get_atom_orb(int *Z, int *n_orb);
 void dftatom_get_atom_orb_rel(int *Z, int *n_orb);

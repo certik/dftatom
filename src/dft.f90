@@ -36,9 +36,9 @@ subroutine V2rho(d)
 ! Calculates rho from V by solving Kohn-Sham equations
 type(dft_data_t), intent(inout) :: d
 
-real(dp) :: Y(size(d%R)), Ein
+real(dp), dimension(size(d%R)) :: P, Q, Y
 integer :: converged, i, n, l, relat
-real(dp) :: Emin_init, Emax_init
+real(dp) :: Ein, Emin_init, Emax_init
 
 d%rho(:) = 0
 !print *, d%scf_iter, d%ks_energies
@@ -62,13 +62,18 @@ do i = 1, size(d%no)
         d%reigen_max_iter, &
         d%R, d%Rp, d%V_tot, &
         d%Z, d%c, relat, d%perturb, Emin_init, Emax_init, &
-        converged, d%ks_energies(i), Y)
+        converged, d%ks_energies(i), P, Q)
     if (converged /= 0) then
         print *, "converged=", converged
         print *, d%scf_iter, n, l, relat
         !print *, "skipping the state"
         !Y = 0
         call stop_error("V2rho: Radial eigen problem didn't converge")
+    end if
+    if (relat == 0) then
+        Y = P / d%R
+    else
+        Y = sqrt(P**2 + Q**2) / d%R
     end if
     d%rho = d%rho + d%fo(i) * Y**2
     d%orbitals(:, i) = Y

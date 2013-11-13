@@ -46,14 +46,15 @@ def solve_radial_eigenproblem(double c, int n, int l, double Ein,
     assert len(Rp) == N
     cdef double E
     cdef int converged
-    cdef ndarray[double, mode="c"] y = empty(N)
+    cdef ndarray[double, mode="c"] P = empty(N)
+    cdef ndarray[double, mode="c"] Q = empty(N)
     c_dftatom.dftatom_solve_radial_eigenproblem(&N, &n, &l, &Ein, &eps,
             &max_iter,
             &R[0], &Rp[0], &u[0], &Z, &c, &relat, &perturb,
             &Emin_init, &Emax_init,
-            &converged, &E, &y[0])
+            &converged, &E, &P[0], &Q[0])
     if converged == 0:
-        return E, y
+        return E, P, Q
     else:
         raise ConvergeError("Radial eigenproblem didn't converge (%d)" % \
                 converged)
