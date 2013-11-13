@@ -19,6 +19,8 @@ Physics Communications, Volume 184, Issue 7, July 2013, Pages 1777-1791, ISSN
 `10.1016/j.cpc.2013.02.014 <http://dx.doi.org/10.1016/j.cpc.2013.02.014>`_.
 Preprint: `arXiv:1209.1752 <http://arxiv.org/abs/1209.1752>`_.
 
+The version of the code published with the article is ``v1.0.2``.
+
 Accuracy
 --------
 
