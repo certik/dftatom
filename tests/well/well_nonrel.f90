@@ -1,5 +1,4 @@
 program well
-use constants, only: pi
 use special, only: spherical_bessel_jn_zeros
 use dftatom
 implicit none
