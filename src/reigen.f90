@@ -145,7 +145,7 @@ subroutine solve_radial_eigenproblem(n, l, Ein, eps, max_iter, &
 !    Returns eigenvalue E and the normalized wavefunctions P, Q. If it doesn't
 !    converge, then converged /= 0, and E is undefined (P and Q then contains
 !    the latest integration of the shooting solver if available --- this is
-!    useful for debugging why it did not converged).
+!    useful for debugging why it did not converge).
 !
 !    Conceptually, the algorithm is to use bisection to converge energy (using
 !    the number of nodes as the criterion) until we get close enough, so that
