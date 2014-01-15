@@ -18,7 +18,7 @@ real(dp), parameter :: c = 137.035999037_dp, eps = 1e-12_dp
 integer :: n, l, relat, converged, i, maxiter
 real(dp) :: Ein, E
 real(dp) :: Emin_init, Emax_init
-real(dp), allocatable :: data(:, :), Eall(:, :), r(:), Rp(:), u(:), y(:)
+real(dp), allocatable :: data(:, :), Eall(:, :), r(:), Rp(:), u(:), P(:), Q(:)
 real(dp) :: E0, au, mu
 integer, parameter :: maxn = 26
 real(dp), parameter :: r_min(maxn) = [ &
@@ -55,7 +55,7 @@ maxiter = 50
 allocate(Eall(0:maxn, maxiter))
 do i = 1, maxiter
     NN = 300 + (50000-300) * (i-1)/(maxiter-1)
-    allocate(r(NN+1), Rp(NN+1), u(NN+1), y(NN+1))
+    allocate(r(NN+1), Rp(NN+1), u(NN+1), P(NN+1), Q(NN+1))
     Eall(0, i) = NN
     au = 219474.62_dp
     E0 = -0.625_dp
@@ -78,7 +78,7 @@ do i = 1, maxiter
         Emin_init = -100*mu
         Emax_init = 100
         call solve_radial_eigenproblem(n, l, Ein, eps, 100, r, rp, u, &
-            Z, c, relat, .false., Emin_init, Emax_init, converged, E, y)
+            Z, c, relat, .false., Emin_init, Emax_init, converged, E, P, Q)
         if (converged /= 0) then
             print "(I3, A18, A18)", n-1, "0", "0"
             Eall(n, i) = 0
@@ -88,7 +88,7 @@ do i = 1, maxiter
             print "(I3, F18.6, F18.6)", n-1, E, (E0-E)*au
         end if
     end do
-    deallocate(r, Rp, u, y)
+    deallocate(r, Rp, u, P, Q)
 end do
 call savetxt("energies_N.txt", Eall)
 end program
