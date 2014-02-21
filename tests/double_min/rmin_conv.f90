@@ -16,7 +16,7 @@ integer, parameter :: NN = 50000
 
 real(dp), parameter :: c = 137.035999037_dp, eps = 1e-12_dp
 integer :: n, l, relat, converged, i, maxiter, maxn
-real(dp) :: r(NN+1), u(size(r)), Ein, E, y(size(r))
+real(dp) :: r(NN+1), u(size(r)), Ein, E, P(size(r)), Q(size(r))
 real(dp) :: Rp(NN+1)
 real(dp) :: Emin_init, Emax_init
 real(dp), allocatable :: data(:, :), Eall(:, :)
@@ -54,7 +54,7 @@ do i = 1, maxiter
         Emin_init = -100*mu
         Emax_init = 100
         call solve_radial_eigenproblem(n, l, Ein, eps, 100, r, rp, u, &
-            Z, c, relat, .false., Emin_init, Emax_init, converged, E, y)
+            Z, c, relat, .false., Emin_init, Emax_init, converged, E, P, Q)
         if (converged /= 0) then
             print "(I3, A18, A18)", n-1, "0", "0"
             Eall(n, i) = 0

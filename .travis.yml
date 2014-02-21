@@ -1,24 +1,37 @@
 language: python
 python:
-  - 2.6
   - 2.7
+env:
+  - TEST_MANUAL="yes"
+  - BUILD_TYPE="Debug"
+  - BUILD_TYPE="Debug" WITH_LAPACK="yes"
+  - BUILD_TYPE="Release"
+  - BUILD_TYPE="Debug" WITH_PYTHON="yes"
+  - BUILD_TYPE="Release" WITH_PYTHON="yes"
+matrix:
+  include:
+    - python: 2.6
+      env:
+        - BUILD_TYPE="Debug" WITH_PYTHON="yes"
 before_install:
+  - sudo apt-get update
   - sudo apt-get install gfortran
+  - if [[ "${WITH_LAPACK}" == "yes" ]]; then
+        sudo apt-get install liblapack-dev;
+    fi
 install:
-  - pip install -q cython numpy --use-mirrors
+  - if [[ "${WITH_PYTHON}" == "yes" ]]; then
+        pip install -q cython numpy --use-mirrors;
+    fi
 before_script:
-  - make -f Makefile.manual # Test manual makefiles
-  - git clean -dfx # Test CMake:
-  - cmake -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" -DWITH_PYTHON="yes" .
-  - make
-  - make install
+  - if [[ "${TEST_MANUAL}" == "yes" ]]; then
+      make -f Makefile.manual;
+    else
+      cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" -DWITH_PYTHON=${WITH_PYTHON} -DWITH_LAPACK=${WITH_LAPACK} -DCMAKE_INSTALL_RPATH:STRING="${VIRTUAL_ENV}/lib" -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=ON .;
+      make;
+      make install;
+    fi
 script:
-  - ctest -E conv
-  - PYTHONPATH=. dftatom/test_runner
-  - mkdir xx
-  - cd xx  # Make sure only the installed library is picked up
-  - LD_LIBRARY_PATH="$VIRTUAL_ENV"/lib/ ../dftatom/test_runner
-  - LD_LIBRARY_PATH="$VIRTUAL_ENV"/lib/ python ../examples/atom_B.py
-  - LD_LIBRARY_PATH="$VIRTUAL_ENV"/lib/ python ../examples/atom_U.py
+  - bin/test_travis.sh
 notifications:
   email: false
