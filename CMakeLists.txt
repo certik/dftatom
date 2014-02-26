@@ -25,8 +25,14 @@ set(WITH_C_INTERFACE no
 if (WITH_PYTHON)
     set(WITH_C_INTERFACE yes)
 endif ()
+
 set(WITH_LAPACK no
     CACHE BOOL "Build tests that depend on Lapack")
+if(WITH_LAPACK)
+    find_package(Lapack REQUIRED)
+    set(LIBS ${LIBS} ${LAPACK_LIBRARIES})
+endif()
+
 
 if (CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
     # gfortran
@@ -64,9 +70,13 @@ else ()
     message("Fortran compiler flags: ${CMAKE_Fortran_FLAGS_RELEASE}")
 endif ()
 message("Installation prefix: ${CMAKE_INSTALL_PREFIX}")
+message("LIBS: ${LIBS}")
 if (WITH_PYTHON)
     message("Python install path: ${PYTHON_INSTALL_PATH}")
 endif ()
 message("With C interface: ${WITH_C_INTERFACE}")
 message("With Python: ${WITH_PYTHON}")
 message("With Lapack: ${WITH_LAPACK}")
+if (WITH_LAPACK)
+    message("LAPACK_LIBRARIES: ${LAPACK_LIBRARIES}")
+endif(WITH_LAPACK)

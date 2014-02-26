@@ -23,12 +23,16 @@ set(SRC
     dftatom.f90
 )
 
+if(WITH_LAPACK)
+    set(SRC ${SRC} lapack.f90 interpolation.f90)
+endif()
+
 if(WITH_C_INTERFACE)
     set(SRC ${SRC} c_dftatom.f90)
 endif()
 
 add_library(dftatom SHARED ${SRC})
-target_link_libraries(dftatom)
+target_link_libraries(dftatom ${LIBS})
 install(TARGETS dftatom
             RUNTIME DESTINATION bin
             ARCHIVE DESTINATION lib
