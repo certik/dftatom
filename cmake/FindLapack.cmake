@@ -1,0 +1,4 @@
+set(LAPACK_LIBRARIES lapack blas)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Lapack DEFAULT_MSG LAPACK_LIBRARIES)
