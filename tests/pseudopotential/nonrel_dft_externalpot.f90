@@ -89,10 +89,10 @@ print *, "Ecoul:", d%Ecoul
 print *, "Eenuc:", d%Eenuc
 print *, "Exc:  ", d%Exc
 print *, "E_tot:", d%Etot
-print *, "state    E            occupancy"
+print *, "state      E [a.u.]             E [Ry]      occupancy"
 do i = 1, size(ks_energies)
-    print "(I1, A, ' ', F18.6, '   ', F6.3)", no(i), l_names(lo(i)), &
-        ks_energies(i), fo(i)
+    print "(I1, A, ' ', F18.6, '   ', F18.6, '   ', F6.3)", no(i), &
+        l_names(lo(i)), ks_energies(i), ks_energies(i) * 2, fo(i)
 end do
 print *
 print *, "The first 10 values of the radial grid:"
