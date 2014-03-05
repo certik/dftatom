@@ -28,6 +28,7 @@ real(dp), parameter :: mixing_alpha = 0.5_dp
 integer, parameter :: mixing_max_iter = 200, reigen_max_iter = 100
 logical :: perturb = .false.
 real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, V_coulomb, tmp
+real(dp), dimension(size(R), 0:2), target :: V_nl
 type(dft_data_t) :: d
 integer :: i, u
 character, parameter :: l_names(0:3) = (/ "s", "p", "d", "f" /)
@@ -55,14 +56,18 @@ ks_energies(1) = -0.738977_dp
 V_tot = thomas_fermi_potential(R, Z) ! Initial guess for the potential
 
 ! R = data(1, :)
-! V1 = data(2, :)
-! V2 = data(3, :)
-! V3 = data(4, :)
+! V0 = data(2, :)
+! V1 = data(3, :)
+! V2 = data(4, :)
 call loadtxt("sn-pseudo.txt", data)
 ! Coulomb potential:
 !     V_coulomb = -Z/R
 ! Uncomment this to use the potential loaded from the file:
-V_coulomb = spline3(data(1, :), data(4, :), R)
+V_nl(:, 0) = spline3(data(1, :), data(2, :), R)
+V_nl(:, 1) = spline3(data(1, :), data(3, :), R)
+V_nl(:, 2) = spline3(data(1, :), data(4, :), R)
+V_coulomb = -1/R
+forall(i=0:2) V_nl(:, i) = V_nl(:, i) - V_coulomb
 V_tot = V_coulomb
 
 ! We allow a few unbounded states
@@ -81,7 +86,9 @@ d%R => R
 d%Rp => Rp
 d%rho => density
 d%V_h => V_h
+! Here V_coulomb means V_loc, the local part of a pseudopotential
 d%V_coulomb => V_coulomb
+d%V_nl => V_nl
 d%V_xc => V_xc
 d%e_xc => e_xc
 d%V_tot => V_tot

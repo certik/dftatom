@@ -60,7 +60,7 @@ do i = 1, size(d%no)
 
     call solve_radial_eigenproblem(n, l, Ein, d%reigen_eps, &
         d%reigen_max_iter, &
-        d%R, d%Rp, d%V_tot, &
+        d%R, d%Rp, d%V_tot + d%V_nl(:, l), &
         d%Z, d%c, relat, d%perturb, Emin_init, Emax_init, &
         converged, d%ks_energies(i), P, Q)
     if (converged /= 0) then
