@@ -13,7 +13,8 @@ real(dp), parameter :: r_min = 1e-7_dp, r_max = 50.0_dp, a = 2.7e6_dp
 integer, parameter :: N = 5000
 real(dp), target :: R(N+1), Rp(N+1)
 integer :: Z
-integer, parameter :: n_orb = 11
+!integer, parameter :: n_orb = 11
+integer, parameter :: n_orb = 1
 integer, target :: no(n_orb), lo(n_orb)
 real(dp), target :: fo(n_orb)
 real(dp), target :: ks_energies(n_orb)
@@ -24,8 +25,8 @@ real(dp), target :: orbitals(N+1, n_orb)
 real(dp), parameter :: reigen_eps = 1e-10_dp
 real(dp), parameter :: mixing_eps = 5e-9_dp
 real(dp), parameter :: mixing_alpha = 0.5_dp
-integer, parameter :: mixing_max_iter = 200, reigen_max_iter = 40
-logical :: perturb = .true.
+integer, parameter :: mixing_max_iter = 200, reigen_max_iter = 100
+logical :: perturb = .false.
 real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, V_coulomb, tmp
 type(dft_data_t) :: d
 integer :: i, u
@@ -34,25 +35,35 @@ real(dp), allocatable :: data(:, :)
 
 Z = 50
 ! Configuration for Z=50:
-no = [1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5]
-lo = [0, 0, 1, 0, 1, 2, 0, 1, 2, 0, 1]
-fo = [2, 2, 6, 2, 6, 10, 2, 6, 10, 2, 2]
+!no = [1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5]
+!lo = [0, 0, 1, 0, 1, 2, 0, 1, 2, 0, 1]
+!fo = [2, 2, 6, 2, 6, 10, 2, 6, 10, 2, 2]
 ! You can modify the occupation here:
 !fo(10) = 1.5_dp
 !fo(11) = 2.0_dp
+
+no = [3]
+lo = [2]
+fo = [9]
 
 R = mesh_exp(r_min, r_max, a, N)
 Rp = mesh_exp_deriv(r_min, r_max, a, N)
 
 !ks_energies = [-2, -1] ! Initial guess for energies
-ks_energies = get_hydrogen_energies(Z, no)
+!ks_energies = get_hydrogen_energies(Z, no)
+ks_energies(1) = -0.738977_dp
 V_tot = thomas_fermi_potential(R, Z) ! Initial guess for the potential
 
-call loadtxt("potential.txt", data)
+! R = data(1, :)
+! V1 = data(2, :)
+! V2 = data(3, :)
+! V3 = data(4, :)
+call loadtxt("sn-pseudo.txt", data)
 ! Coulomb potential:
-     V_coulomb = -Z/R
+!     V_coulomb = -Z/R
 ! Uncomment this to use the potential loaded from the file:
-!V_coulomb = spline3(data(:, 1), data(:, 2), R)
+V_coulomb = spline3(data(1, :), data(4, :), R)
+V_tot = V_coulomb
 
 ! We allow a few unbounded states
 Emax_init = 10
@@ -60,10 +71,12 @@ Emax_init = 10
 do i = 1, size(no)
     Emin_init(i) = E_nl(0._dp, no(i), lo(i), Z, 0)
 end do
+Emin_init(1) = -0.738977_dp
+Emin_init(1) = -30
 ! For robustness, decrease Emin by 10%:
-Emin_init = 1.1_dp * Emin_init
+Emin_init = 1.5_dp * Emin_init
 
-d%Z = Z  ! The boundary condition for non-singular potential is Z=0.
+d%Z = 0  ! The boundary condition for non-singular potential is Z=0.
 d%R => R
 d%Rp => Rp
 d%rho => density
