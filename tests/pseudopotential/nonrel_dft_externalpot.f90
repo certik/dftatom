@@ -37,6 +37,9 @@ Z = 50
 no = [1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5]
 lo = [0, 0, 1, 0, 1, 2, 0, 1, 2, 0, 1]
 fo = [2, 2, 6, 2, 6, 10, 2, 6, 10, 2, 2]
+! You can modify the occupation here:
+!fo(10) = 1.5_dp
+!fo(11) = 2.0_dp
 
 R = mesh_exp(r_min, r_max, a, N)
 Rp = mesh_exp_deriv(r_min, r_max, a, N)
