@@ -72,7 +72,6 @@ call loadtxt("sn-pseudo.txt", data)
 V_nl(:, 0) = spline3(data(1, :), data(2, :), R)
 V_nl(:, 1) = spline3(data(1, :), data(3, :), R)
 V_nl(:, 2) = spline3(data(1, :), data(4, :), R)
-V_nl = V_nl / 2 ! Ry to Ha
 V_coulomb = -Z*erf(R)/R
 forall(i=0:2) V_nl(:, i) = V_nl(:, i) - V_coulomb
 V_tot = V_coulomb
