@@ -147,7 +147,7 @@ real(dp), intent(out) :: Vxc(:), exc(:)
 
 integer :: i
 do i = 1, size(R)
-    call getvxc_scalar(rho(i), relat, c, exc(i), Vxc(i))
+    call xc_pz(rho(i), exc(i), Vxc(i))
 end do
 end subroutine
 
