@@ -98,7 +98,7 @@ call atom_lda_pseudo(no, lo, fo, Emin_init, Emax_init, ks_energies, &
 Enl = 0
 do i = 1, size(fo)
     Enl = Enl + integrate(Rp, 4*pi * fo(i)*orbitals(:, i)**2/(4*pi) * &
-        (V_l(:, lo(i))-V_tot)*R**2)
+        (V_l(:, lo(i))-V_tot + 2*V_loc)*R**2)
 end do
 ! Prints the energies:
 print *, "Ekin: ", Ekin
