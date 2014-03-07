@@ -1,9 +1,6 @@
 program nonrel_dft_externalpot
 use dftatom, only: dp, mesh_exp, mesh_exp_deriv, thomas_fermi_potential, E_nl, &
-        get_hydrogen_energies
-use dft_data, only: dft_data_t
-use dft, only: KS_step
-use mixings, only: mixing_anderson
+        get_hydrogen_energies, atom_lda_pseudo
 use interpolation, only: spline3, loadtxt
 use utils, only: assert, newunit
 implicit none
@@ -27,12 +24,13 @@ real(dp), parameter :: mixing_eps = 5e-9_dp
 real(dp), parameter :: mixing_alpha = 0.5_dp
 integer, parameter :: mixing_max_iter = 200, reigen_max_iter = 100
 logical :: perturb = .false.
-real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, V_coulomb, tmp
+real(dp), dimension(size(R)), target :: V_loc
 real(dp), dimension(size(R), 0:2), target :: V_l
-type(dft_data_t) :: d
-integer :: i, u
+integer :: i
 character, parameter :: l_names(0:3) = (/ "s", "p", "d", "f" /)
 real(dp), allocatable :: data(:, :)
+real(dp) :: Ekin, Eee, Een, Exc, Etot
+integer :: xc_type
 
 Z = 14
 ! Configuration for Z=50:
@@ -66,15 +64,13 @@ V_tot = thomas_fermi_potential(R, Z) ! Initial guess for the potential
 ! V1 = data(3, :)
 ! V2 = data(4, :)
 call loadtxt("sn-pseudo.txt", data)
-! Coulomb potential:
-!     V_coulomb = -Z/R
 ! Uncomment this to use the potential loaded from the file:
 V_l(:, 0) = spline3(data(1, :), data(2, :), R)
 V_l(:, 1) = spline3(data(1, :), data(3, :), R)
 V_l(:, 2) = spline3(data(1, :), data(4, :), R)
-V_coulomb = -Z*erf(R)/R
-forall(i=0:2) V_l(:, i) = V_l(:, i) - V_coulomb
-V_tot = V_coulomb
+V_loc = -Z*erf(R)/R
+forall(i=0:2) V_l(:, i) = V_l(:, i) - V_loc
+V_tot = V_loc
 
 ! We allow a few unbounded states
 Emax_init = 10
@@ -89,39 +85,17 @@ Emin_init(3) = -30
 ! For robustness, decrease Emin by 10%:
 Emin_init = 1.5_dp * Emin_init
 
-d%Z = 0  ! The boundary condition for non-singular potential is Z=0.
-d%R => R
-d%Rp => Rp
-d%rho => density
-d%V_h => V_h
-! Here V_coulomb means V_loc, the local part of a pseudopotential
-d%V_coulomb => V_coulomb
-d%V_l => V_l
-d%V_xc => V_xc
-d%e_xc => e_xc
-d%V_tot => V_tot
-d%orbitals => orbitals
-d%alpha = mixing_alpha
-d%pseudopot = .true.
-d%xc_type = 2
-d%dirac = .false.
-d%perturb = perturb
-d%reigen_eps = reigen_eps
-d%reigen_max_iter = reigen_max_iter
-d%no => no
-d%lo => lo
-d%fo => fo
-d%ks_energies => ks_energies
-d%Emax_init => Emax_init
-d%Emin_init => Emin_init
-tmp = mixing_anderson(KS_step, d%V_tot - d%V_coulomb, mixing_max_iter, &
-    .true., d, mixing_alpha, mixing_eps)
+xc_type = 2
+call atom_lda_pseudo(no, lo, fo, Emin_init, Emax_init, ks_energies, &
+    R, Rp, V_loc, V_l, V_tot, density, orbitals, Ekin, Eee, Een, Exc, Etot, &
+    reigen_eps, reigen_max_iter, mixing_eps, mixing_alpha, mixing_max_iter, &
+    perturb, xc_type)
 ! Prints the energies:
-print *, "Ekin: ", d%Ekin
-print *, "Ecoul:", d%Ecoul
-print *, "Eenuc:", d%Eenuc
-print *, "Exc:  ", d%Exc
-print *, "E_tot:", d%Etot
+print *, "Ekin: ", Ekin
+print *, "Ecoul:", Eee
+print *, "Eenuc:", Een
+print *, "Exc:  ", Exc
+print *, "Etot: ", Etot
 print *, "state      E [a.u.]             E [Ry]      occupancy"
 do i = 1, size(ks_energies)
     print "(I1, A, ' ', F18.6, '   ', F18.6, '   ', F6.3)", no(i), &
@@ -138,12 +112,4 @@ print *
 print *, "The first 10 values of the radial charge density:"
 print *, density(:10)
 
-print *, "The first 10 values of the Hartree potential (V_h):"
-print *, V_h(:10)
-
-! Save the radial grid, density, V_h
-open(newunit(u), file="density.txt", status="replace")
-write(u, "((es23.16, ' ', es23.16, ' ', es23.16))") (R(i), density(i), V_h(i), &
-        i=1, size(R))
-close(u)
 end program
