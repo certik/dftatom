@@ -22,6 +22,6 @@ public dp, E_nl, get_atomic_states_nonrel, mesh_exp, stop_error, &
         get_atomic_states_rel, integrate, get_Vxc, str, mesh_exp_deriv, &
         get_atom_orb, atom_lda, atom_rlda, rpoisson_outward_pc, &
         get_atom_orb_rel, integrate_rproblem_outward, get_Vh, &
-        get_hydrogen_energies
+        get_hydrogen_energies, atom_lda_pseudo
 
 end module

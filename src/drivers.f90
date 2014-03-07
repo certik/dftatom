@@ -19,7 +19,8 @@ use mixings, only: mixing_anderson
 implicit none
 
 private
-public get_atom_orb, atom_lda, atom_rlda, get_atom_orb_rel
+public get_atom_orb, atom_lda, atom_rlda, get_atom_orb_rel, &
+    atom_lda_pseudo
 
 contains
 
@@ -229,6 +230,60 @@ d%so => so
 tmp = mixing_anderson(KS_step, d%V_tot - d%V_coulomb, mixing_max_iter, &
     .true., d, mixing_alpha, mixing_eps)
 E_tot = d%Etot
+end subroutine
+
+subroutine atom_lda_pseudo(no, lo, fo, Emin_init, Emax_init, ks_energies, &
+    R, Rp, V_loc, V_l, V_tot, density, orbitals, Ekin, Eee, Een, Exc, Etot, &
+    reigen_eps, reigen_max_iter, mixing_eps, mixing_alpha, mixing_max_iter, &
+    perturb, xc_type)
+integer, intent(in), target :: no(:), lo(:)
+real(dp), intent(in), target :: fo(:)
+real(dp), intent(in), target :: Emin_init(:), Emax_init(:)
+real(dp), intent(inout), target :: ks_energies(:)
+real(dp), intent(in), target :: R(:), Rp(:)
+real(dp), intent(in), target :: V_loc(:), V_l(:, 0:)
+real(dp), intent(inout), target :: V_tot(:)
+real(dp), intent(out), target :: density(:)
+real(dp), intent(out), target :: orbitals(:, :)
+real(dp), intent(out) ::  Ekin, Eee, Een, Exc, Etot
+real(dp), intent(in) :: reigen_eps, mixing_eps, mixing_alpha
+integer, intent(in) :: mixing_max_iter, reigen_max_iter, xc_type
+logical, intent(in) :: perturb
+
+real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, tmp
+type(dft_data_t) :: d
+
+d%Z = 0
+d%R => R
+d%Rp => Rp
+d%rho => density
+d%V_h => V_h
+d%V_coulomb => V_loc
+d%V_xc => V_xc
+d%e_xc => e_xc
+d%V_tot => V_tot
+d%orbitals => orbitals
+d%alpha = mixing_alpha
+d%pseudopot = .true.
+d%V_l => V_l
+d%xc_type = xc_type
+d%dirac = .false.
+d%perturb = perturb
+d%reigen_eps = reigen_eps
+d%reigen_max_iter = reigen_max_iter
+d%no => no
+d%lo => lo
+d%fo => fo
+d%ks_energies => ks_energies
+d%Emax_init => Emax_init
+d%Emin_init => Emin_init
+tmp = mixing_anderson(KS_step, d%V_tot - d%V_coulomb, mixing_max_iter, &
+    .true., d, mixing_alpha, mixing_eps)
+Ekin = d%Ekin
+Eee = d%Ecoul
+Een = d%Eenuc
+Exc = d%Exc
+Etot = d%Etot
 end subroutine
 
 end module
