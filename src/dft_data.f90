@@ -12,6 +12,8 @@ public dft_data_t
 type dft_data_t
     real(dp), dimension(:), pointer :: R, Rp, V_coulomb, V_h, V_xc, &
         e_xc, V_tot, rho
+    logical :: pseudopot ! if .true., then we need to add V_l to each orbital
+    real(dp), dimension(:, :), pointer :: V_l
     real(dp), dimension(:, :), pointer :: orbitals
     real(dp) :: reigen_eps, alpha, c
     integer :: Z, scf_iter, reigen_max_iter

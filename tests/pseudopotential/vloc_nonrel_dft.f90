@@ -66,6 +66,7 @@ d%e_xc => e_xc
 d%V_tot => V_tot
 d%orbitals => orbitals
 d%alpha = mixing_alpha
+d%pseudopot = .false.
 d%xc_type = 1
 d%dirac = .false.
 d%perturb = perturb

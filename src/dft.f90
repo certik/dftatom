@@ -36,7 +36,7 @@ subroutine V2rho(d)
 ! Calculates rho from V by solving Kohn-Sham equations
 type(dft_data_t), intent(inout) :: d
 
-real(dp), dimension(size(d%R)) :: P, Q, Y
+real(dp), dimension(size(d%R)) :: P, Q, Y, V
 integer :: converged, i, n, l, relat
 real(dp) :: Ein, Emin_init, Emax_init
 
@@ -57,10 +57,15 @@ do i = 1, size(d%no)
     Ein = d%ks_energies(i)
     Emax_init = d%Emax_init(i)
     Emin_init = d%Emin_init(i)
+    if (d%pseudopot) then
+        V = d%V_tot + d%V_l(:, l)
+    else
+        V = d%V_tot
+    end if
 
     call solve_radial_eigenproblem(n, l, Ein, d%reigen_eps, &
         d%reigen_max_iter, &
-        d%R, d%Rp, d%V_tot, &
+        d%R, d%Rp, V, &
         d%Z, d%c, relat, d%perturb, Emin_init, Emax_init, &
         converged, d%ks_energies(i), P, Q)
     if (converged /= 0) then
