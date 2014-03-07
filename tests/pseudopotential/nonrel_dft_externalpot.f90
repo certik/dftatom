@@ -3,6 +3,8 @@ use dftatom, only: dp, mesh_exp, mesh_exp_deriv, thomas_fermi_potential, E_nl, &
         get_hydrogen_energies, atom_lda_pseudo
 use interpolation, only: spline3, loadtxt
 use utils, only: assert, newunit
+use ode1d, only: integrate
+use constants, only: pi
 implicit none
 
 ! Mesh parameters:
@@ -29,7 +31,7 @@ real(dp), dimension(size(R), 0:2), target :: V_l
 integer :: i
 character, parameter :: l_names(0:3) = (/ "s", "p", "d", "f" /)
 real(dp), allocatable :: data(:, :)
-real(dp) :: Ekin, Eee, Een, Exc, Etot
+real(dp) :: Ekin, Eee, Een, Exc, Etot, Enl
 integer :: xc_type
 
 Z = 14
@@ -90,12 +92,21 @@ call atom_lda_pseudo(no, lo, fo, Emin_init, Emax_init, ks_energies, &
     R, Rp, V_loc, V_l, V_tot, density, orbitals, Ekin, Eee, Een, Exc, Etot, &
     reigen_eps, reigen_max_iter, mixing_eps, mixing_alpha, mixing_max_iter, &
     perturb, xc_type)
+! Enl using only the l=0 channel of V_l can be calculated like this:
+!     Enl = integrate(Rp, 4*pi*density*(V_l(:, 0)-V_tot)*R**2)
+! But when using all channels, we have to use orbitals:
+Enl = 0
+do i = 1, size(fo)
+    Enl = Enl + integrate(Rp, 4*pi * fo(i)*orbitals(:, i)**2/(4*pi) * &
+        (V_l(:, lo(i))-V_tot)*R**2)
+end do
 ! Prints the energies:
 print *, "Ekin: ", Ekin
 print *, "Ecoul:", Eee
 print *, "Eenuc:", Een
 print *, "Exc:  ", Exc
 print *, "Etot: ", Etot
+print *, "Enl:  ", Enl
 print *, "state      E [a.u.]             E [Ry]      occupancy"
 do i = 1, size(ks_energies)
     print "(I1, A, ' ', F18.6, '   ', F18.6, '   ', F6.3)", no(i), &
