@@ -70,7 +70,7 @@ call loadtxt("sn-pseudo.txt", data)
 V_l(:, 0) = spline3(data(1, :), data(2, :), R)
 V_l(:, 1) = spline3(data(1, :), data(3, :), R)
 V_l(:, 2) = spline3(data(1, :), data(4, :), R)
-V_loc = -Z*erf(R)/R
+V_loc = V_l(:, 0)
 forall(i=0:2) V_l(:, i) = V_l(:, i) - V_loc
 V_tot = V_loc
 
@@ -98,7 +98,7 @@ call atom_lda_pseudo(no, lo, fo, Emin_init, Emax_init, ks_energies, &
 Enl = 0
 do i = 1, size(fo)
     Enl = Enl + integrate(Rp, 4*pi * fo(i)*orbitals(:, i)**2/(4*pi) * &
-        (V_l(:, lo(i))-V_tot + 2*V_loc)*R**2)
+        (V_l(:, lo(i)))*R**2)
 end do
 ! Prints the energies:
 print *, "Ekin: ", Ekin
