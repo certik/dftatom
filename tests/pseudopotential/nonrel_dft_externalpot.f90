@@ -23,7 +23,7 @@ real(dp), parameter :: reigen_eps = 1e-10_dp
 real(dp), parameter :: mixing_eps = 5e-9_dp
 real(dp), parameter :: mixing_alpha = 0.5_dp
 integer, parameter :: mixing_max_iter = 200, reigen_max_iter = 100
-logical :: perturb = .false.
+logical :: perturb = .true.
 real(dp), dimension(size(R)), target :: V_loc
 real(dp), dimension(size(R), 0:2), target :: V_l
 integer :: i
