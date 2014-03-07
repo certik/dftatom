@@ -70,9 +70,7 @@ do i = 1, size(d%no)
         converged, d%ks_energies(i), P, Q)
     if (converged /= 0) then
         print *, "converged=", converged
-        print *, d%scf_iter, n, l, relat
-        !print *, "skipping the state"
-        !Y = 0
+        print *, "scf_iter =", d%scf_iter, "n =", n, "l =", l, "relat =", relat
         call stop_error("V2rho: Radial eigen problem didn't converge")
     end if
     if (relat == 0) then
