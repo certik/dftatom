@@ -13,16 +13,17 @@ implicit none
 
 contains
 
-subroutine dftatom_get_vxc(n, R, rho, relat, c, V) bind(c)
+subroutine dftatom_get_vxc(n, R, rho, relat, c, xc_type, V) bind(c)
 integer(c_int), intent(in) :: n
 real(c_double), intent(in) :: R(n), rho(n), c
 logical(c_bool), intent(in) :: relat
+integer(c_int), intent(in) :: xc_type
 real(c_double), intent(out) :: V(n)
 ! We need to retype this, so that it compiles:
 logical :: relat2
 real(dp) :: exc(n)
 relat2 = relat
-call get_Vxc(R, rho, relat2, c, exc, V)
+call get_Vxc(R, rho, relat2, c, xc_type, exc, V)
 end subroutine
 
 subroutine dftatom_integrate(n, x, f, s) bind(c)
@@ -145,6 +146,7 @@ d%e_xc => e_xc
 d%V_tot => V_tot
 d%orbitals => orbitals
 d%alpha = mixing_alpha
+d%xc_type = 1
 d%dirac = .false.
 d%perturb = perturb
 d%reigen_eps = reigen_eps

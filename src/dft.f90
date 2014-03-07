@@ -25,7 +25,7 @@ subroutine rho2V(d)
 ! Assumes that d%rho is normalized.
 type(dft_data_t), intent(inout) :: d
 
-call get_Vxc(d%R, d%rho, d%dirac, d%c, d%e_xc, d%V_xc)
+call get_Vxc(d%R, d%rho, d%dirac, d%c, d%xc_type, d%e_xc, d%V_xc)
 d%V_h = get_Vh(d%R, d%Rp, d%rho)
 call total_energy(d%fo, d%ks_energies, d%V_tot, d%V_h, d%V_coulomb, d%e_xc, &
     d%R, d%Rp, d%rho, d%Ekin, d%Ecoul, d%Eenuc, d%Exc, d%Etot)
@@ -138,16 +138,28 @@ EE_xc = -4*pi * integrate(Rp, e_xc * rho * R**2)
 Etot = T_s + E_c + EE_xc
 end subroutine
 
-subroutine get_Vxc(R, rho, relat, c, exc, Vxc)
+subroutine get_Vxc(R, rho, relat, c, xc_type, exc, Vxc)
 real(dp), intent(in) :: R(:) ! radial grid
 real(dp), intent(in) :: rho(:) ! charge density
 logical, intent(in) :: relat ! .true. return RLDA, otherwise LDA
+! Type of XC potential:
+! 1 ... VWN LDA or VWN RLDA (depending on 'relat')
+! 2 ... PZ LDA
+integer, intent(in) :: xc_type
 real(dp), intent(in) :: c ! speed of light
 real(dp), intent(out) :: Vxc(:), exc(:)
 
 integer :: i
 do i = 1, size(R)
-    call getvxc_scalar(rho(i), relat, c, exc(i), Vxc(i))
+    select case (xc_type)
+        case (1)
+            call getvxc_scalar(rho(i), relat, c, exc(i), Vxc(i))
+        case (2)
+            call xc_pz(rho(i), exc(i), Vxc(i))
+        case default
+            print *, "xc_type =", xc_type
+            call stop_error("xc_type not supported.")
+    end select
 end do
 end subroutine
 
@@ -204,6 +216,49 @@ if (relat) then
     ex = ex * R
     Vx = Vx * S
 end if
+exc = ex + ec
+Vxc = Vx + Vc
+end subroutine
+
+subroutine xc_pz(n, exc, Vxc)
+! Calculates XC LDA density and potential from the charge density "n".
+! Uses the Perdew Zunger [1] parametrization.
+!
+! [1] Perdew, J. P., & Zunger, A. (1981). Self-interaction correction to
+! density-functional approximations for many-electron systems. Physical Review
+! B, 23(10), 5048–5079.
+real(dp), intent(in) :: n ! charge density
+real(dp), intent(out) :: exc ! XC density
+real(dp), intent(out) :: Vxc ! XC potential
+
+real(dp), parameter :: gam = -0.1423_dp
+real(dp), parameter :: beta1 = 1.0529_dp
+real(dp), parameter :: beta2 = 0.3334_dp
+real(dp), parameter :: A =  0.0311_dp
+real(dp), parameter :: B = -0.048_dp
+real(dp), parameter :: C =  0.0020_dp
+real(dp), parameter :: D = -0.0116_dp
+real(dp) :: ex, ec, Vx, Vc, rs
+
+if (n == 0) then
+    exc = 0
+    Vxc = 0
+    return
+end if
+
+ex = -3/(4*pi) * (3*pi**2*n)**(1.0_dp/3)
+Vx = 4*ex/3
+
+rs = (3/(4*pi*n))**(1.0_dp/3)
+if (rs >= 1) then
+    ec = gam / (1+beta1*sqrt(rs)+beta2*rs)
+    Vc = ec * (1+7*beta1*sqrt(rs)/6 + 4*beta2*rs/3) / &
+        (1+beta1*sqrt(rs) + beta2*rs)
+else
+    ec = A*log(rs) + B + C*rs*log(rs) + D*rs
+    Vc = A*log(rs) + (B-A/3) + 2*C*rs*log(rs)/3 + (2*D-C)*rs/3
+end if
+
 exc = ex + ec
 Vxc = Vx + Vc
 end subroutine

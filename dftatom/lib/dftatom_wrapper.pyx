@@ -10,11 +10,11 @@ class ConvergeError(Exception):
 
 def getvxc(ndarray[double, mode="c"] R not None,
         ndarray[double, mode="c"] rho not None,
-        bool relat, double c):
+        bool relat, double c, int xc_type):
     cdef int n = len(R)
     assert len(rho) == n
     cdef ndarray[double, mode="c"] V = empty(n)
-    c_dftatom.dftatom_get_vxc(&n, &R[0], &rho[0], &relat, &c, &V[0])
+    c_dftatom.dftatom_get_vxc(&n, &R[0], &rho[0], &relat, &c, &xc_type, &V[0])
     return V
 
 def integrate(ndarray[double, mode="c"] x not None,

@@ -15,6 +15,7 @@ type dft_data_t
     real(dp), dimension(:, :), pointer :: orbitals
     real(dp) :: reigen_eps, alpha, c
     integer :: Z, scf_iter, reigen_max_iter
+    integer :: xc_type
     ! If .true., we are solving the Dirac equation
     logical :: dirac
     ! Triples of (n, l, f), where "n", "l" are quantum numbers and "f" is the
