@@ -106,7 +106,7 @@ print *, "Ecoul:", Eee
 print *, "Eenuc:", Een
 print *, "Exc:  ", Exc
 print *, "Etot: ", Etot
-print *, "Enl:  ", Enl
+print *, "Enl:  ", Enl, "a.u. =", 2*Enl, "Ry"
 print *, "state      E [a.u.]             E [Ry]      occupancy"
 do i = 1, size(ks_energies)
     print "(I1, A, ' ', F18.6, '   ', F18.6, '   ', F6.3)", no(i), &
