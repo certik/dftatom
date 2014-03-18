@@ -70,9 +70,10 @@ call loadtxt("sn-pseudo.txt", data)
 V_l(:, 0) = spline3(data(1, :), data(2, :), R)
 V_l(:, 1) = spline3(data(1, :), data(3, :), R)
 V_l(:, 2) = spline3(data(1, :), data(4, :), R)
+! Use the s-channel for the V_loc potential:
 V_loc = V_l(:, 0)
 forall(i=0:2) V_l(:, i) = V_l(:, i) - V_loc
-V_tot = V_loc
+V_tot = V_loc ! Initial guess for the total potential
 
 ! We allow a few unbounded states
 Emax_init = 10
@@ -90,16 +91,9 @@ Emin_init = 1.5_dp * Emin_init
 xc_type = 2
 call atom_lda_pseudo(no, lo, fo, Emin_init, Emax_init, ks_energies, &
     R, Rp, V_loc, V_l, V_tot, density, orbitals, Ekin, Eee, Een, Exc, Etot, &
+    Enl, &
     reigen_eps, reigen_max_iter, mixing_eps, mixing_alpha, mixing_max_iter, &
     perturb, xc_type)
-! Enl using only the l=0 channel of V_l can be calculated like this:
-!     Enl = integrate(Rp, 4*pi*density*(V_l(:, 0)-V_tot)*R**2)
-! But when using all channels, we have to use orbitals:
-Enl = 0
-do i = 1, size(fo)
-    Enl = Enl + integrate(Rp, 4*pi * fo(i)*orbitals(:, i)**2/(4*pi) * &
-        (V_l(:, lo(i)))*R**2)
-end do
 ! Prints the energies:
 print *, "Ekin: ", Ekin
 print *, "Ecoul:", Eee
