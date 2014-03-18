@@ -1,6 +1,30 @@
-from numpy import array, empty, loadtxt
+# First create 'sn.param', then run opium as follows:
+# opium sn.param sn.log all rpt
+# Then run this script, which reads "sn.vi_plt" below
+
+from numpy import array, empty, fromstring
 from scipy.interpolate import splrep, splev
 from dftatom import atom_lda_pseudo, mesh_exp, mesh_exp_deriv
+
+def read_plt(filename):
+    t = open(filename).read().split("@")
+    V = []
+    for n in range(4):
+        V.append(fromstring(t[n], sep=" ").reshape([-1, 3]))
+    V = array(V)
+    # For the potential number n=0, 1, 2, 3:
+    # R    = V[n, :, 0]
+    # V(R) = V[n, :, 1]
+    # V[n, :, 2] is radius
+
+    # Convert Ry to Ha (atomic units):
+    for n in range(4):
+        V[n, :, 1] /= 2
+
+    R = V[0, :, 0]
+
+    return array([R, V[0, :, 1], V[1, :, 1], V[2, :, 1]])
+
 
 a = 2.7e6
 rmin = 1e-7
@@ -17,7 +41,7 @@ Emax_init[:] = 10
 Emin_init = empty(3)
 Emin_init[:] = -30
 ks_energies = array([-2, -1, -1], dtype="double")
-data = loadtxt("sn-pseudo.txt")
+data = read_plt("sn.vi_plt")
 V_l = empty((N+1, 3), order='F')
 for i in range(3):
     tck = splrep(data[0, :], data[i+1, :])
