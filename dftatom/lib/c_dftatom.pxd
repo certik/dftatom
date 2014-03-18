@@ -18,3 +18,4 @@ cdef extern from "c_dftatom.h":
     void dftatom_mesh_exp(double *r_min, double *r_max, double *a, int *N, double *R)
     void dftatom_mesh_exp_deriv(double *r_min, double *r_max, double *a, int *N, double *R)
     void dftatom_get_vh(int *n, double *R, double *Rp, double *rho, double *V)
+    void dftatom_atom_lda_pseudo(int *norb, int *no, int *lo, double *fo, double *Emin_init, double *Emax_init, double *ks_energies, int *N, int *maxl, double *R, double *Rp, double *V_loc, double *V_l, double *V_tot, double *density, double *orbitals, double *Ekin, double *Eee, double *Een, double *Exc, double *Etot, double *Enl, double *reigen_eps, int *reigen_max_iter, double *mixing_eps, double *mixing_alpha, int *mixing_max_iter, bool *perturb, int *xc_type)
