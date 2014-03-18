@@ -8,7 +8,7 @@ use iso_c_binding, only: c_int, c_double, c_bool
 use dftatom, only: get_Vxc, dp, solve_radial_eigenproblem, integrate, &
         rpoisson_outward_pc, get_atom_orb, atom_lda, mesh_exp, &
         mesh_exp_deriv, atom_rlda, get_atom_orb_rel, &
-        integrate_rproblem_outward, get_Vh
+        integrate_rproblem_outward, get_Vh, atom_lda_pseudo
 implicit none
 
 contains
@@ -211,6 +211,38 @@ integer(c_int), intent(in) :: n
 real(c_double), intent(in) :: R(n), Rp(n), rho(n)
 real(c_double), intent(out) :: V(n)
 V = get_Vh(R, Rp, rho)
+end subroutine
+
+subroutine dftatom_atom_lda_pseudo(norb, no, lo, fo, Emin_init, Emax_init, &
+        ks_energies, N, maxl, &
+    R, Rp, V_loc, V_l, V_tot, density, orbitals, Ekin, Eee, Een, Exc, Etot, &
+    Enl, &
+    reigen_eps, reigen_max_iter, mixing_eps, mixing_alpha, mixing_max_iter, &
+    perturb, xc_type) bind(c)
+integer(c_int), intent(in) :: norb
+integer(c_int), intent(in) :: no(norb), lo(norb)
+real(c_double), intent(in) :: fo(norb)
+real(c_double), intent(in) :: Emin_init(norb), Emax_init(norb)
+real(c_double), intent(inout) :: ks_energies(norb)
+integer(c_int), intent(in) :: N, maxl
+real(c_double), intent(in) :: R(N+1), Rp(N+1)
+real(c_double), intent(in) :: V_loc(N+1), V_l(N+1, maxl)
+real(c_double), intent(inout) :: V_tot(N+1)
+real(c_double), intent(out) :: density(N+1)
+real(c_double), intent(out) :: orbitals(N+1, norb)
+real(c_double), intent(out) ::  Ekin, Eee, Een, Exc, Etot, Enl
+real(c_double), intent(in) :: reigen_eps, mixing_eps, mixing_alpha
+integer(c_int), intent(in) :: mixing_max_iter, reigen_max_iter, xc_type
+logical(c_bool), intent(in) :: perturb
+
+logical :: perturb2
+perturb2 = perturb
+
+call atom_lda_pseudo(no, lo, fo, Emin_init, Emax_init, ks_energies, &
+    R, Rp, V_loc, V_l, V_tot, density, orbitals, Ekin, Eee, Een, Exc, Etot, &
+    Enl, &
+    reigen_eps, reigen_max_iter, mixing_eps, mixing_alpha, mixing_max_iter, &
+    perturb2, xc_type)
 end subroutine
 
 end module
