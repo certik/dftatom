@@ -1,7 +1,7 @@
 from libcpp cimport bool
 
 from numpy cimport import_array, ndarray
-from numpy import empty
+from numpy import empty, size
 
 cimport c_dftatom
 
@@ -177,5 +177,32 @@ def get_Vh(ndarray[double, mode="c"] R not None,
     cdef int n = len(R)
     c_dftatom.dftatom_get_vh(&n, &R[0], &Rp[0], &rho[0], &V[0])
     return V
+
+def atom_lda_pseudo(
+        ndarray[int, mode="c"] no not None,
+        ndarray[int, mode="c"] lo not None,
+        ndarray[double, mode="c"] fo not None,
+        ndarray[double, mode="c"] Emin_init not None,
+        ndarray[double, mode="c"] Emax_init not None,
+        ndarray[double, mode="c"] ks_energies not None,
+        ndarray[double, mode="c"] R not None,
+        ndarray[double, mode="c"] Rp not None,
+        ndarray[double, mode="c"] V_loc not None,
+        ndarray[double, ndim=2, mode="fortran"] V_l not None,
+        ndarray[double, mode="c"] V_tot not None,
+        double reigen_eps, int reigen_max_iter, double mixing_eps,
+        double mixing_alpha, int mixing_max_iter, bool perturb, int xc_type):
+    cdef int n_orb=size(no), N=size(R)-1, maxl=size(V_l, 1)
+    cdef double Ekin, Eee, Een, Exc, Etot, Enl
+    cdef ndarray[double, mode="c"] density = empty(N+1)
+    cdef ndarray[double, ndim=2, mode="fortran"] orbitals = empty((N+1, n_orb),
+            order="F")
+    c_dftatom.dftatom_atom_lda_pseudo(&n_orb, &no[0], &lo[0], &fo[0],
+            &Emin_init[0], &Emax_init[0], &ks_energies[0], &N, &maxl,
+            &R[0], &Rp[0], &V_loc[0], &V_l[0, 0], &V_tot[0], &density[0],
+            &orbitals[0, 0], &Ekin, &Eee, &Een, &Exc, &Etot, &Enl,
+            &reigen_eps, &reigen_max_iter, &mixing_eps, &mixing_alpha,
+            &mixing_max_iter, &perturb, &xc_type)
+    return Ekin, Eee, Een, Exc, Etot, Enl, density, orbitals
 
 import_array()
