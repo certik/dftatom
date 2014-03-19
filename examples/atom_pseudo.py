@@ -2,9 +2,10 @@
 # opium sn.param sn.log all rpt
 # Then run this script, which reads "sn.vi_plt" below
 
-from numpy import array, empty, fromstring
+from math import pi
+from numpy import array, empty, fromstring, size
 from scipy.interpolate import splrep, splev
-from dftatom import atom_lda_pseudo, mesh_exp, mesh_exp_deriv
+from dftatom import atom_lda_pseudo, mesh_exp, mesh_exp_deriv, integrate
 
 def read_plt(filename):
     t = open(filename).read().split("@")
@@ -83,3 +84,11 @@ print orbitals[:10, 1]
 print
 print "The first 10 values of the radial charge density:"
 print density[:10]
+
+print
+print "Total charge:", integrate(Rp, 4*pi*density*R**2)
+idx = size(R)-1
+while R[idx] > 2.0: idx -= 1
+print "Rcut =", R[idx], "a.u. = R(idx); idx =", idx
+print "Total charge within cut-off:", integrate(Rp[:idx],
+        4*pi*density[:idx]*R[:idx]**2)
