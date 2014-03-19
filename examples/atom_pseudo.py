@@ -5,7 +5,8 @@
 from math import pi
 from numpy import array, empty, fromstring, size
 from scipy.interpolate import splrep, splev
-from dftatom import atom_lda_pseudo, mesh_exp, mesh_exp_deriv, integrate
+from dftatom import (atom_lda_pseudo, mesh_exp, mesh_exp_deriv, integrate,
+        atom_lda)
 
 def read_plt(filename):
     t = open(filename).read().split("@")
@@ -90,5 +91,22 @@ print "Total charge:", integrate(Rp, 4*pi*density*R**2)
 idx = size(R)-1
 while R[idx] > 2.0: idx -= 1
 print "Rcut =", R[idx], "a.u. = R(idx); idx =", idx
+print "Total charge within cut-off:", integrate(Rp[:idx],
+        4*pi*density[:idx]*R[:idx]**2)
+
+print
+print "ALL ELECTRON CALCULATION:"
+Z = 50
+E_tot, ks_energies, n, l, f, R, Rp, V_tot, density, orbitals = \
+        atom_lda(Z, rmin, rmax, a, N, 1e-11, 100, 1e-10, 0.35, 100, True)
+valence_density = 0
+print "Only treating the following valence states in charge calculation:"
+for i in [8, 9, 10]: # valence states, starting from 0
+    print i, n[i], l[i], f[i]
+    # Construct the density corresponding to the orbital 'i':
+    valence_density += f[i]*orbitals[:, i]**2/(4*pi)
+
+density = valence_density
+print "Total charge:", integrate(Rp, 4*pi*density*R**2)
 print "Total charge within cut-off:", integrate(Rp[:idx],
         4*pi*density[:idx]*R[:idx]**2)
