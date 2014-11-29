@@ -14,7 +14,9 @@ public integrate, normalize, parsefunction, get_n_nodes, get_min_idx, &
         adams_interp_outward, adams_extrapolation_outward, &
         adams_interp_outward_implicit, &
         adams_interp_inward_implicit, &
-        get_midpoints, rk4_integrate3, rk4_integrate4, rk4_integrate
+        get_midpoints, rk4_integrate3, rk4_integrate4, rk4_integrate, &
+        integrate_trapz_1, integrate_trapz_3, integrate_trapz_5, &
+        integrate_trapz_7, integrate_simpson, integrate_adams
 
 contains
 
