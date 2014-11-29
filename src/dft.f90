@@ -177,7 +177,7 @@ real(dp), parameter :: A = 0.0621814_dp
 
 real(dp) :: Q, rs, y, ec, ex, Vc, Vx, beta, mu, R, S
 
-if (n == 0) then
+if (n < epsilon(1._dp)) then
     exc = 0
     Vxc = 0
     return
