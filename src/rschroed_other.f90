@@ -13,6 +13,8 @@ use ode1d_other, only: adams_extrapolation_inward, adams_interp_inward
 
 implicit none
 private
+public schroed_inward_adams_pr, schroed_outward_adams_pr, &
+    integrate_rschroed_u_inward_rk4, integrate_rschroed_u_rk4
 
 contains
 

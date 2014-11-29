@@ -10,8 +10,14 @@ use ode1d, only: get_midpoints
 
 implicit none
 private
-public rk4_integrate_inward2, &
-        adams_extrapolation_inward, adams_interp_inward
+public rk4_integrate_inward2, rk4_integrate_inward, rk4_integrate_inward4, &
+        adams_extrapolation_inward, adams_interp_inward, &
+        integrate_simpson_direct, eulerstep, rk4step, rk4step2, &
+        adams_interp_inward_8, adams_interp_outward_8, &
+        adams_extrapolation_inward_8, adams_extrapolation_outward_8, &
+        adams_extrapolation_inward_6, adams_interp_outward_6, &
+        adams_interp_inward_6, adams_extrapolation_outward_6
+
 
 contains
 

@@ -12,6 +12,8 @@ use ode1d, only: adams_extrapolation_outward, adams_interp_outward
 implicit none
 
 private
+public rpoisson_inward, rpoisson_outward_pc_rV, rpoisson_inward_pc, &
+    rpoisson_inward_pc_rV
 
 contains
 
