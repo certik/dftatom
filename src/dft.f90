@@ -96,20 +96,6 @@ call rho2V(d)
 F = d%V_xc + d%V_h - V
 end function
 
-subroutine print_ks_energies(d)
-type(dft_data_t), intent(in) :: d
-integer :: i
-print *, "Etot:", d%Etot
-print *, "Ekin:", d%Ekin
-print *, "Ecoul:", d%Ecoul
-print *, "Eenuc:", d%Eenuc
-print *, "Exc:", d%Exc
-print *, "Energies (n, l, E):"
-do i = 1, size(d%no)
-    print *, d%no(i), d%lo(i), d%ks_energies(i)
-end do
-end subroutine
-
 subroutine total_energy(fo, ks_energies, V_in, V_h, V_coulomb, e_xc, R, Rp, n, &
         T_s, E_ee, E_en, EE_xc, Etot)
 ! This is a variational, quadratically convergent form of total energy
@@ -177,7 +163,7 @@ real(dp), parameter :: A = 0.0621814_dp
 
 real(dp) :: Q, rs, y, ec, ex, Vc, Vx, beta, mu, R, S
 
-if (n == 0) then
+if (n < epsilon(1._dp)) then
     exc = 0
     Vxc = 0
     return

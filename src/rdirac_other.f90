@@ -12,6 +12,7 @@ use utils, only: stop_error
 
 implicit none
 private
+public dirac_outward_adams_pr, dirac_inward_adams_pr
 
 contains
 

@@ -190,13 +190,13 @@ do while (iter < max_iter)
             converged = 6
             return
         end if
-        if (Emax == Emax_init) then
+        if (abs(Emax - Emax_init) < tiny(1._dp)) then
             ! The algorithm didn't change Emax, so Emax_init was set
             ! incorrectly.
             converged = 10
             return
         end if
-        if (Emin == Emin_init) then
+        if (abs(Emin - Emin_init) < tiny(1._dp)) then
             ! The algorithm didn't change Emin, so Emin_init was set
             ! incorrectly.
             converged = 9
