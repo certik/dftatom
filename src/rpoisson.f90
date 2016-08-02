@@ -35,6 +35,7 @@ real(dp) :: V(size(R))
 real(dp), dimension(size(R)) :: u1, u2, u1p, u2p
 integer :: N, i
 real(dp) :: rho_mid(3)
+real(dp) :: A
 
 N = size(R)
 rho_mid = get_midpoints(R(:4), rho(:4))
@@ -47,10 +48,11 @@ u1p(:4) = u2(:4) * Rp(:4)
 u2p(:4) = -(4*pi*rho(:4) + 2*u2(:4)/R(:4)) * Rp(:4)
 
 do i = 4, N-1
-    u2(i+1)  = u2(i) + (55*u2p(i) - 59*u2p(i-1) + 37*u2p(i-2) - 9*u2p(i-3)) / 24
-    u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
-    u2(i+1)  = u2(i)  + (9*u2p(i+1) + 19*u2p(i) - 5*u2p(i-1) + u2p(i-2)) / 24
-    u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
+    A  = u2(i) + (55*u2p(i) - 59*u2p(i-1) + 37*u2p(i-2) - 9*u2p(i-3)) / 24
+    A = -Rp(i+1) * (4*pi*rho(i+1) + 2*A/R(i+1))
+    A  = u2(i)  + (9*A + 19*u2p(i) - 5*u2p(i-1) + u2p(i-2)) / 24
+
+    u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*A/R(i+1))
     u2(i+1)  = u2(i)  + (9*u2p(i+1) + 19*u2p(i) - 5*u2p(i-1) + u2p(i-2)) / 24
 
     u1p(i+1) = +Rp(i+1) * u2(i+1)
