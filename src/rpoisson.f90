@@ -34,8 +34,7 @@ real(dp), intent(in) :: R(:), Rp(:), rho(:)
 real(dp) :: V(size(R))
 
 real(dp), dimension(size(R)) :: u1, u2, u1p, u2p
-integer :: N, i, it
-integer, parameter :: max_it = 2
+integer :: N, i
 real(dp) :: rho_mid(3)
 
 N = size(R)
@@ -49,14 +48,14 @@ u1p(:4) = u2(:4) * Rp(:4)
 u2p(:4) = -(4*pi*rho(:4) + 2*u2(:4)/R(:4)) * Rp(:4)
 
 do i = 4, N-1
-    u1(i+1)  = u1(i)  + adams_extrapolation_outward(u1p, i)
     u2(i+1)  = u2(i)  + adams_extrapolation_outward(u2p, i)
-    do it = 1, max_it
-        u1p(i+1) = +Rp(i+1) * u2(i+1)
-        u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
-        u1(i+1)  = u1(i)  + adams_interp_outward(u1p, i)
-        u2(i+1)  = u2(i)  + adams_interp_outward(u2p, i)
-    end do
+    u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
+    u2(i+1)  = u2(i)  + adams_interp_outward(u2p, i)
+    u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
+    u2(i+1)  = u2(i)  + adams_interp_outward(u2p, i)
+
+    u1p(i+1) = +Rp(i+1) * u2(i+1)
+    u1(i+1)  = u1(i)  + adams_interp_outward(u1p, i)
 end do
 V = u1
 end function
