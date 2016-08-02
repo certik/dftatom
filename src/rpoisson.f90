@@ -6,7 +6,6 @@ module rpoisson
 use types, only: dp
 use utils, only: stop_error
 use constants, only: pi
-use ode1d, only: adams_extrapolation_outward, adams_interp_outward
 use ode1d, only: integrate, get_midpoints, rk4_integrate3
 
 implicit none
@@ -48,14 +47,14 @@ u1p(:4) = u2(:4) * Rp(:4)
 u2p(:4) = -(4*pi*rho(:4) + 2*u2(:4)/R(:4)) * Rp(:4)
 
 do i = 4, N-1
-    u2(i+1)  = u2(i)  + adams_extrapolation_outward(u2p, i)
+    u2(i+1)  = u2(i) + (55*u2p(i) - 59*u2p(i-1) + 37*u2p(i-2) - 9*u2p(i-3)) / 24
     u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
-    u2(i+1)  = u2(i)  + adams_interp_outward(u2p, i)
+    u2(i+1)  = u2(i)  + (9*u2p(i+1) + 19*u2p(i) - 5*u2p(i-1) + u2p(i-2)) / 24
     u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
-    u2(i+1)  = u2(i)  + adams_interp_outward(u2p, i)
+    u2(i+1)  = u2(i)  + (9*u2p(i+1) + 19*u2p(i) - 5*u2p(i-1) + u2p(i-2)) / 24
 
     u1p(i+1) = +Rp(i+1) * u2(i+1)
-    u1(i+1)  = u1(i)  + adams_interp_outward(u1p, i)
+    u1(i+1)  = u1(i)  + (9*u1p(i+1) + 19*u1p(i) - 5*u1p(i-1) + u1p(i-2)) / 24
 end do
 V = u1
 end function
