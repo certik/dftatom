@@ -15,6 +15,28 @@ public rpoisson_outward_pc
 
 contains
 
+subroutine rpoisson_kernel1(R, Rp, rho, u1, u2, u1p, u2p)
+real(dp), intent(in) :: R(:), Rp(:), rho(:)
+real(dp), intent(inout) :: u1(:), u2(:), u1p(:), u2p(:)
+real(dp) :: RR
+integer :: i
+do i = 4, size(R)-1
+    RR = Rp(i+1)/R(i+1)
+    u2p(i+1) = &
+         - u2(i)    * (2         - 3._dp /2 *RR)*RR &
+         - u2p(i)   * (19._dp/12 - 55._dp/16*RR)*RR &
+         + u2p(i-1) * (5._dp /12 - 59._dp/16*RR)*RR &
+         - u2p(i-2) * (1._dp /12 - 37._dp/16*RR)*RR &
+         - u2p(i-3) *              9._dp /16*RR *RR &
+         - rho(i+1) * (4         - 3        *RR)*Rp(i+1)*pi
+
+    u2(i+1)  = u2(i)  + (9*u2p(i+1) + 19*u2p(i) - 5*u2p(i-1) + u2p(i-2)) / 24
+
+    u1p(i+1) = +Rp(i+1) * u2(i+1)
+    u1(i+1)  = u1(i)  + (9*u1p(i+1) + 19*u1p(i) - 5*u1p(i-1) + u1p(i-2)) / 24
+end do
+end subroutine
+
 function rpoisson_outward_pc(R, Rp, rho) result(V)
 ! Solves the equation V''(r) + 2/r*V'(r) = -4*pi*rho
 !
@@ -33,35 +55,16 @@ real(dp), intent(in) :: R(:), Rp(:), rho(:)
 real(dp) :: V(size(R))
 
 real(dp), dimension(size(R)) :: u1, u2, u1p, u2p
-integer :: N, i
 real(dp) :: rho_mid(3)
-real(dp) :: RR
 
-N = size(R)
 rho_mid = get_midpoints(R(:4), rho(:4))
 call rpoisson_outward_rk4(rho(:4), rho_mid, R(:4), &
     4*pi*integrate(Rp, rho*R), &
     0.0_dp, &
     u1(:4), u2(:4))
-
 u1p(:4) = u2(:4) * Rp(:4)
 u2p(:4) = -(4*pi*rho(:4) + 2*u2(:4)/R(:4)) * Rp(:4)
-
-do i = 4, N-1
-    RR = Rp(i+1)/R(i+1)
-    u2p(i+1) = &
-         - u2(i)    * (2         - 3._dp /2 *RR)*RR &
-         - u2p(i)   * (19._dp/12 - 55._dp/16*RR)*RR &
-         + u2p(i-1) * (5._dp /12 - 59._dp/16*RR)*RR &
-         - u2p(i-2) * (1._dp /12 - 37._dp/16*RR)*RR &
-         - u2p(i-3) *              9._dp /16*RR *RR &
-         - rho(i+1) * (4         - 3        *RR)*Rp(i+1)*pi
-
-    u2(i+1)  = u2(i)  + (9*u2p(i+1) + 19*u2p(i) - 5*u2p(i-1) + u2p(i-2)) / 24
-
-    u1p(i+1) = +Rp(i+1) * u2(i+1)
-    u1(i+1)  = u1(i)  + (9*u1p(i+1) + 19*u1p(i) - 5*u1p(i-1) + u1p(i-2)) / 24
-end do
+call rpoisson_kernel1(R, Rp, rho, u1, u2, u1p, u2p)
 V = u1
 end function
 
