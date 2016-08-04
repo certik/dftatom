@@ -19,7 +19,7 @@ do N = 5000, 50000, 5000
     u2 = 1
     u1p = 0
     u2p = 0
-    iter = 4000 * 5000/N
+    iter = 40 * 5000/N
     call cpu_time(t1)
     do i = 1, iter
         call rpoisson_kernel1(R, Rp, rho, u1, u2, u1p, u2p)
