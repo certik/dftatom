@@ -6,16 +6,34 @@ module rpoisson
 use types, only: dp
 use utils, only: stop_error
 use constants, only: pi
-use ode1d, only: integrate, get_midpoints, rk4_integrate3
+use ode1d, only: integrate, get_midpoints, rk4_integrate3, &
+    adams_extrapolation_outward, adams_interp_outward
 
 implicit none
 
 private
-public rpoisson_outward_pc
+public rpoisson_outward_pc, rpoisson_kernel1, rpoisson_kernel2
 
 contains
 
 subroutine rpoisson_kernel1(R, Rp, rho, u1, u2, u1p, u2p)
+real(dp), intent(in) :: R(:), Rp(:), rho(:)
+real(dp), intent(inout) :: u1(:), u2(:), u1p(:), u2p(:)
+integer, parameter :: max_it=2
+integer :: i, it
+do i = 4, size(R)-1
+    u1(i+1)  = u1(i)  + adams_extrapolation_outward(u1p, i)
+    u2(i+1)  = u2(i)  + adams_extrapolation_outward(u2p, i)
+    do it = 1, max_it
+        u1p(i+1) = +Rp(i+1) * u2(i+1)
+        u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
+        u1(i+1)  = u1(i)  + adams_interp_outward(u1p, i)
+        u2(i+1)  = u2(i)  + adams_interp_outward(u2p, i)
+    end do
+end do
+end subroutine
+
+subroutine rpoisson_kernel2(R, Rp, rho, u1, u2, u1p, u2p)
 real(dp), intent(in) :: R(:), Rp(:), rho(:)
 real(dp), intent(inout) :: u1(:), u2(:), u1p(:), u2p(:)
 real(dp) :: RR
