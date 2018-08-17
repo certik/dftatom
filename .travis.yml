@@ -21,7 +21,7 @@ before_install:
     fi
 install:
   - if [[ "${WITH_PYTHON}" == "yes" ]]; then
-        pip install -q cython numpy --use-mirrors;
+        pip install cython numpy;
     fi
 before_script:
   - if [[ "${TEST_MANUAL}" == "yes" ]]; then
