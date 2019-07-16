@@ -6,6 +6,7 @@ project(dftatom)
 enable_language(Fortran)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/mod_files)
 
 # Make sure that CMAKE_BUILD_TYPE is either Debug or Release:
 if (NOT CMAKE_BUILD_TYPE)
