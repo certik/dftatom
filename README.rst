@@ -195,6 +195,23 @@ You need to have ``lapack`` and ``blas`` libraries. If non-standard linking is
 required, modify the link options in the file
 ``tests/double_min/CMakeLists.txt`` by hand.
 
+Install using Conda
+-------------------
+
+One can also use Conda to install dftatom from source::
+
+    conda create -n dftatom python=3.7 pytest numpy cython
+    conda activate dftatom
+    cmake -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$PREFIX -DWITH_PYTHON=yes .
+    make
+    make install
+    pytest
+
+Or install dftatom directly from conda-forge::
+
+    conda create -n dftatom dftatom
+    conda activate dftatom
+
 Usage
 -----
 
