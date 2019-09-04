@@ -10,7 +10,7 @@ env:
   - BUILD_TYPE="Release" WITH_PYTHON="yes"
 matrix:
   include:
-    - python: 2.6
+    - python: 3.7
       env:
         - BUILD_TYPE="Debug" WITH_PYTHON="yes"
 before_install:
