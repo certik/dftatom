@@ -10,10 +10,10 @@ if [[ "${TEST_MANUAL}" == "yes" ]]; then
 else
     ctest -E conv --output-on-failure
     if [[ "${WITH_PYTHON}" == "yes" ]]; then
-        PYTHONPATH=. dftatom/test_runner
+        pytest
         mkdir xx
         cd xx
-        ../dftatom/test_runner
+        pytest --pyargs dftatom
         python ../examples/atom_B.py
         python ../examples/atom_U.py
     fi
