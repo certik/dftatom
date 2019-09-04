@@ -11,6 +11,7 @@ else
     ctest -E conv --output-on-failure
     if [[ "${WITH_PYTHON}" == "yes" ]]; then
         pytest
+        rm -r dftatom
         mkdir xx
         cd xx
         pytest --pyargs dftatom
