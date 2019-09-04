@@ -13,29 +13,21 @@ identically)
 * portable
 
 """
+from __future__ import print_function
 import os
 import sys
 import inspect
+from inspect import isgeneratorfunction
 import traceback
 import pdb
 from glob import glob
 from timeit import default_timer as clock
 
-def isgeneratorfunction(object):
-    """
-    Return true if the object is a user-defined generator function.
+if sys.version_info[0] < 3:
+    PY3 = False
 
-    Generator function objects provides same attributes as functions.
-
-    See isfunction.__doc__ for attributes listing.
-
-    Adapted from Python 2.6.
-    """
-    CO_GENERATOR = 0x20
-    if (inspect.isfunction(object) or inspect.ismethod(object)) and \
-        object.func_code.co_flags & CO_GENERATOR:
-        return True
-    return False
+else:
+    PY3 = True
 
 def test(*paths, **kwargs):
     """
@@ -133,21 +125,35 @@ class SymPyTests(object):
             try:
                 self.test_file(f)
             except KeyboardInterrupt:
-                print " interrupted by user"
+                print(" interrupted by user")
                 break
         return self._reporter.finish()
 
     def test_file(self, filename):
-        import imp
         name = "test%d" % self._count
         name = os.path.splitext(os.path.basename(filename))[0]
         self._count += 1
-        try:
-            #module = __import__(filename, globals(), locals())
-            module = imp.load_source(name, filename)
-        except (ImportError, SyntaxError):
-            self._reporter.import_error(filename, sys.exc_info())
-            return
+
+        if PY3:
+            import types
+            from importlib.machinery import SourceFileLoader
+            try:
+                loader = SourceFileLoader(name, filename)
+                module = types.ModuleType(loader.name)
+                loader.exec_module(module)
+            except (ImportError, SyntaxError):
+                self._reporter.import_error(filename, sys.exc_info())
+                return
+
+        else:
+            import imp
+            try:
+                #module = __import__(filename, globals(), locals())
+                module = imp.load_source(name, filename)
+            except (ImportError, SyntaxError):
+                self._reporter.import_error(filename, sys.exc_info())
+                return
+
         disabled = getattr(module, "disabled", False)
         if disabled:
             funcs = []
@@ -292,7 +298,7 @@ class SymPyDocTests(object):
             try:
                 self.test_file(f)
             except KeyboardInterrupt:
-                print " interrupted by user"
+                print(" interrupted by user")
                 break
         return self._reporter.finish()
 
@@ -308,8 +314,11 @@ class SymPyDocTests(object):
             init_printing(sstrrepr)
 
         import doctest
-        import unittest
-        from StringIO import StringIO
+        try:
+            from StringIO import StringIO # Python 2
+
+        except ImportError:
+            from io import StringIO # Python 3
 
         rel_name = filename[len(self._root_dir)+1:]
         module = rel_name.replace('/', '.')[:-3]
@@ -668,8 +677,6 @@ The advantage over py.test is that it only depends on sympy and should just
 work in any circumstances. See "sympy.test?" for documentation.
 """
 
-import os
-import sys
 from optparse import OptionParser
 
 def main():

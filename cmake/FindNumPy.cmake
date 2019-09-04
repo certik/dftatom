@@ -1,5 +1,5 @@
 execute_process(
-	COMMAND python -c "import numpy; print numpy.get_include()"
+	COMMAND python -c "import numpy; print(numpy.get_include())"
 	OUTPUT_VARIABLE PYTHON_SYS_PATH
 	)
 string(STRIP ${PYTHON_SYS_PATH} PYTHON_SYS_PATH)
