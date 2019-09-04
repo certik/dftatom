@@ -167,17 +167,20 @@ To only enable the C interface (but not Python), set the variable
 To run Python API tests (to make sure that things got compiled properly and
 that the Python module can be imported)::
 
-    $ PYTHONPATH=. dftatom/test_runner
-    ============================= test process starts ==============================
-    executable:   /home/ondrej/repos/qsnake/local/bin/python  (2.6.4-final-0)
+    $ python -m pytest
+    ============================= test session starts ==============================
+    platform linux -- Python 3.7.3, pytest-5.1.2, py-1.8.0, pluggy-0.12.0
+    rootdir: /home/certik/repos/dftatom
+    collected 4 items
 
-    tests/test_dftatom.py[4] ....                                               [OK]
+    dftatom/tests/test_dftatom.py ....                                       [100%]
 
-    =================== tests finished: 4 passed in 1.90 seconds ===================
+    ============================== 4 passed in 0.69s ===============================
 
 This will use the ``dftatom`` module from the current directory (that's why we
-need to add ``.`` to ``PYTHONPATH`` so that Python can find the module). To
-install the module into a different directory, do for example::
+need to use ``python -m pytest`` syntax so that Python can find the module on
+all platforms; on some, just ``pytest`` is sufficient). To install the module
+into a different directory, do for example::
 
     cmake -DWITH_PYTHON=yes -DCMAKE_INSTALL_PREFIX="$HOME/usr" -DPYTHON_INSTALL_PATH="$HOME/usr/lib/python2.7/site-packages" .
     make

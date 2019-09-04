@@ -55,9 +55,6 @@ if (WITH_PYTHON)
     find_package(NumPy REQUIRED)
     find_package(Cython REQUIRED)
     add_subdirectory(dftatom)
-    add_custom_target(test
-        COMMAND ./test_runner dftatom
-        )
 endif ()
 
 message("\n")
