@@ -51,26 +51,58 @@ subroutine atom_lda(Z, r_min, r_max, a, N, no, lo, fo, ks_energies, E_tot, &
     R, Rp, V_tot, density, orbitals, reigen_eps, reigen_max_iter, &
     mixing_eps, mixing_alpha, &
     mixing_max_iter, perturb)
+! Solves the non-relativistic radial Kohn-Sham equations for an atom.
+!
+! The description of the algorithm, the radial mesh and other details can be
+! found in [1].
+!
+! [1] Ondřej Čertík, John E. Pask, Jiří Vackář, dftatom: A robust and general
+! Schrödinger and Dirac solver for atomic structure calculations, Computer
+! Physics Communications, Volume 184, Issue 7, July 2013, Pages 1777-1791, ISSN
+! 0010-4655, 10.1016/j.cpc.2013.02.014.
+!
+! ## Input arguments:
+! Atomic number
 integer, intent(in) :: Z
+! Mesh parameters, domain is [r_min, r_max], "a" is the exponential gradation
+! and N is the number of grid points. See [1] for more details.
 real(dp), intent(in) :: r_min, r_max, a
 integer, intent(in) :: N
-integer, intent(out), target :: no(:), lo(:)
-real(dp), intent(out), target :: fo(:)
-real(dp), intent(out), target :: ks_energies(:)
-real(dp), intent(out) :: E_tot
-real(dp), intent(out), target :: R(:), Rp(:)
-real(dp), intent(out), target :: V_tot(:)
-real(dp), intent(out), target :: density(:)
-real(dp), intent(out), target :: orbitals(:, :)
-real(dp), intent(in) :: reigen_eps, mixing_eps, mixing_alpha
-integer, intent(in) :: mixing_max_iter, reigen_max_iter
+! The tolerance of the eigensolver
+real(dp), intent(in) :: reigen_eps
+! The maximum allowed number of iterations for the eigensolver
+integer, intent(in) :: reigen_max_iter
+! The tolerance of the SCF solver
+real(dp), intent(in) :: mixing_eps
+! The alpha coefficient in the mixing scheme
+real(dp), intent(in) :: mixing_alpha
+! The maximum allowed number of iterations of the SCF solver:
+integer, intent(in) :: mixing_max_iter
+! Should perturbation correction be used (.true. = yes)
 logical, intent(in) :: perturb
 
+! ## Output arguments:
+! Occupation numbers
+integer, intent(out), target :: no(:), lo(:)
+real(dp), intent(out), target :: fo(:)
+! Kohn-Sham energies
+real(dp), intent(out), target :: ks_energies(:)
+! Total energy
+real(dp), intent(out) :: E_tot
+! Radial mesh and its derivative
+real(dp), intent(out), target :: R(:), Rp(:)
+! Total self-consistent potential
+real(dp), intent(out), target :: V_tot(:)
+! Kohn-Sham charge density
+real(dp), intent(out), target :: density(:)
+! Kohn-Sham orbitals
+real(dp), intent(out), target :: orbitals(:, :)
+
+! Local variables
 integer, pointer :: no_a(:), lo_a(:)
 real(dp), pointer :: fo_a(:)
 integer :: i
 real(dp), dimension(size(ks_energies)), target :: Emin_init, Emax_init
-
 real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, V_coulomb, tmp
 type(dft_data_t) :: d
 
