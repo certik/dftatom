@@ -6,15 +6,54 @@ module rpoisson
 use types, only: dp
 use utils, only: stop_error
 use constants, only: pi
-use ode1d, only: adams_extrapolation_outward, adams_interp_outward
-use ode1d, only: integrate, get_midpoints, rk4_integrate3
+use ode1d, only: integrate, get_midpoints, rk4_integrate3, &
+    adams_extrapolation_outward, adams_interp_outward
 
 implicit none
 
 private
-public rpoisson_outward_pc
+public rpoisson_outward_pc, rpoisson_kernel1, rpoisson_kernel2
 
 contains
+
+subroutine rpoisson_kernel1(R, Rp, rho, u1, u2, u1p, u2p)
+real(dp), intent(in) :: R(:), Rp(:), rho(:)
+real(dp), intent(inout) :: u1(:), u2(:), u1p(:), u2p(:)
+integer, parameter :: max_it=2
+integer :: i, it
+do i = 4, size(R)-1
+    u1(i+1)  = u1(i)  + adams_extrapolation_outward(u1p, i)
+    u2(i+1)  = u2(i)  + adams_extrapolation_outward(u2p, i)
+    do it = 1, max_it
+        u1p(i+1) = +Rp(i+1) * u2(i+1)
+        u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
+        u1(i+1)  = u1(i)  + adams_interp_outward(u1p, i)
+        u2(i+1)  = u2(i)  + adams_interp_outward(u2p, i)
+    end do
+end do
+end subroutine
+
+subroutine rpoisson_kernel2(R, Rp, rho, u1, u2, u1p, u2p)
+real(dp), intent(in) :: R(:), Rp(:), rho(:)
+real(dp), intent(inout) :: u1(:), u2(:), u1p(:), u2p(:)
+real(dp) :: RR
+integer :: i
+do i = 4, size(R)-1
+    RR = Rp(i+1)/R(i+1)
+    u2p(i+1) = &
+         - u2(i)    * (2         - 3._dp /2 *RR)*RR &
+         - u2p(i)   * (19._dp/12 - 55._dp/16*RR)*RR &
+         + u2p(i-1) * (5._dp /12 - 59._dp/16*RR)*RR &
+         - u2p(i-2) * (1._dp /12 - 37._dp/16*RR)*RR &
+         - u2p(i-3) *              9._dp /16*RR *RR &
+         - rho(i+1) * (4         - 3        *RR)*Rp(i+1)*pi
+
+    u2(i+1)  = u2(i)  + (9*u2p(i+1) + 19*u2p(i) - 5*u2p(i-1) + u2p(i-2)) / 24
+
+    u1p(i+1) = +Rp(i+1) * u2(i+1)
+    u1(i+1)  = u1(i)  + (9*u1p(i+1) + 19*u1p(i) - 5*u1p(i-1) + u1p(i-2)) / 24
+end do
+end subroutine
 
 function rpoisson_outward_pc(R, Rp, rho) result(V)
 ! Solves the equation V''(r) + 2/r*V'(r) = -4*pi*rho
@@ -34,30 +73,16 @@ real(dp), intent(in) :: R(:), Rp(:), rho(:)
 real(dp) :: V(size(R))
 
 real(dp), dimension(size(R)) :: u1, u2, u1p, u2p
-integer :: N, i, it
-integer, parameter :: max_it = 2
 real(dp) :: rho_mid(3)
 
-N = size(R)
 rho_mid = get_midpoints(R(:4), rho(:4))
 call rpoisson_outward_rk4(rho(:4), rho_mid, R(:4), &
     4*pi*integrate(Rp, rho*R), &
     0.0_dp, &
     u1(:4), u2(:4))
-
 u1p(:4) = u2(:4) * Rp(:4)
 u2p(:4) = -(4*pi*rho(:4) + 2*u2(:4)/R(:4)) * Rp(:4)
-
-do i = 4, N-1
-    u1(i+1)  = u1(i)  + adams_extrapolation_outward(u1p, i)
-    u2(i+1)  = u2(i)  + adams_extrapolation_outward(u2p, i)
-    do it = 1, max_it
-        u1p(i+1) = +Rp(i+1) * u2(i+1)
-        u2p(i+1) = -Rp(i+1) * (4*pi*rho(i+1) + 2*u2(i+1)/R(i+1))
-        u1(i+1)  = u1(i)  + adams_interp_outward(u1p, i)
-        u2(i+1)  = u2(i)  + adams_interp_outward(u2p, i)
-    end do
-end do
+call rpoisson_kernel1(R, Rp, rho, u1, u2, u1p, u2p)
 V = u1
 end function
 
