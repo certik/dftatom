@@ -4,8 +4,8 @@ use dftatom, only: mesh_exp, mesh_exp_deriv, dp, &
 implicit none
 
 ! Mesh parameters:
-real(dp), parameter :: r_min = 1e-8_dp, r_max = 50.0_dp, a = 1e6_dp
-integer, parameter :: NN = 50000
+real(dp), parameter :: r_min = 1e-8_dp, r_max = 30.0_dp, a = 1e6_dp
+integer, parameter :: NN = 2000
 
 real(dp), parameter :: c = 137.035999037_dp, eps = 1e-9_dp
 integer :: n, l, relat, converged
