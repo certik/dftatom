@@ -7,12 +7,12 @@
 # variables.
 if (CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
     # gfortran
-    set(common "-std=f2003 -Wall -Wextra -Wimplicit-interface -fPIC -fmax-errors=1")
+    set(common "-Wall -Wextra -Wimplicit-interface -fPIC -fmax-errors=1")
     set(CMAKE_Fortran_FLAGS_RELEASE_INIT "${common} -O3 -march=native -ffast-math -funroll-loops")
     set(CMAKE_Fortran_FLAGS_DEBUG_INIT   "${common} -g -fbounds-check -fcheck-array-temporaries -fbacktrace")
 elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
     # ifort
-    set(common "-std2003 -warn all")
+    set(common "-warn all")
     set(CMAKE_Fortran_FLAGS_RELEASE_INIT "${common} -xHOST -O3 -no-prec-div -static")
     set(CMAKE_Fortran_FLAGS_DEBUG_INIT   "${common} -check all")
 endif ()
