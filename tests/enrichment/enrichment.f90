@@ -1,6 +1,7 @@
 program enrichment
 use dftatom, only: mesh_exp, mesh_exp_deriv, dp, &
     solve_radial_eigenproblem, stop_error
+use utils, only: savetxt
 implicit none
 
 ! Mesh parameters:
@@ -37,7 +38,7 @@ print "(ES10.2, F10.2, ES10.2, I10)", r_min, r_max, a, NN
 print *
 print "(A3, A3, A15, A15, A10)", "n", "l", "E", "E_exact", "Error"
 print *
-do n = 1, 7
+do n = 1, 1
     do l = 0, n-1
         E_exact = - Zion**2 / (2.0_dp * n**2)
         Ein = -1000
@@ -50,4 +51,5 @@ do n = 1, 7
         print "(I3, I3, F15.6, F15.6, ES10.2)", n, l, E, E_exact, error
     end do
 end do
+call savetxt("enrichment.txt", reshape([R, u, P, Q], [NN+1, 4]))
 end program
