@@ -13,6 +13,7 @@ integer :: n, l, relat, converged
 real(dp) :: R(NN+1), u(size(r)), Ein, E, E_exact, error
 real(dp) :: P(size(R)), Q(size(R)), Rp(NN+1)
 real(dp) :: Zion, rloc, C1, C2 !, C3, C4
+real(dp) :: V0, r0
 logical, parameter :: perturb = .true.
 
 
@@ -27,9 +28,12 @@ C2 =  0.725075_dp
 !C4 = 0
 Zion = 1
 
-u(:) = - Zion/r * erf(r/(sqrt(2._dp)*rloc)) &
-             + exp(-1._dp/2*(r/rloc)**2) * (C1 + C2*(r/rloc)**2)
+!u(:) = - Zion/r * erf(r/(sqrt(2._dp)*rloc)) &
+!             + exp(-1._dp/2*(r/rloc)**2) * (C1 + C2*(r/rloc)**2)
 !u = -Zion/r
+V0 = 16
+r0 = 0.5_dp
+u = - V0 * exp(-r**2/r0**2)
 
 
 print *, "Hydrogen like energies for Z=92 (U)"
