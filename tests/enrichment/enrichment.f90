@@ -20,7 +20,7 @@ R = mesh_exp(r_min, r_max, a, NN)
 Rp = mesh_exp_deriv(r_min, r_max, a, NN)
 !u(:) = -Z/r
 
-rloc = 0.2_dp
+rloc = 2.0_dp
 C1 = -4.180237_dp
 C2 =  0.725075_dp
 !C3 = 0
