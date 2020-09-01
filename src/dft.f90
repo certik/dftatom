@@ -77,6 +77,8 @@ do i = 1, size(d%no)
     end if
     d%rho = d%rho + d%fo(i) * Y**2
     d%orbitals(:, i) = Y
+    d%P(:,i) = P
+    d%Q(:,i) = Q
 end do
 d%rho = d%rho / (4*pi)
 end subroutine

@@ -12,7 +12,7 @@ public dft_data_t
 type dft_data_t
     real(dp), dimension(:), pointer :: R, Rp, V_coulomb, V_h, V_xc, &
         e_xc, V_tot, rho
-    real(dp), dimension(:, :), pointer :: orbitals
+    real(dp), dimension(:, :), pointer :: orbitals, P, Q
     real(dp) :: reigen_eps, alpha, c
     integer :: Z, scf_iter, reigen_max_iter
     ! If .true., we are solving the Dirac equation
