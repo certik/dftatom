@@ -3,7 +3,7 @@ use dftatom, only: dp, mesh_exp, mesh_exp_deriv, thomas_fermi_potential, E_nl
 use dft_data, only: dft_data_t
 use dft, only: KS_step
 use mixings, only: mixing_anderson
-use utils, only: assert, newunit
+use utils, only: assert, newunit, savetxt
 implicit none
 
 ! Mesh parameters:
@@ -18,7 +18,7 @@ real(dp), target :: ks_energies(n_orb)
 real(dp), target :: Emin_init(n_orb), Emax_init(n_orb)
 real(dp), target :: V_tot(N+1)
 real(dp), target :: density(N+1)
-real(dp), target :: orbitals(N+1, n_orb)
+real(dp), target :: orbitals(N+1, n_orb), P(N+1, n_orb), Q(N+1, n_orb)
 real(dp), parameter :: reigen_eps = 1e-10_dp
 real(dp), parameter :: mixing_eps = 5e-9_dp
 real(dp), parameter :: mixing_alpha = 0.5_dp
@@ -66,6 +66,8 @@ d%V_xc => V_xc
 d%e_xc => e_xc
 d%V_tot => V_tot
 d%orbitals => orbitals
+d%P => P
+d%Q => Q
 d%alpha = mixing_alpha
 d%dirac = .false.
 d%perturb = perturb
@@ -94,9 +96,12 @@ print *
 print *, "The first 10 values of the radial grid:"
 print *, R(:10)
 print *
-print *, "The first 10 values of the 1st and 2nd orbitals:"
+print *, "The first 10 values of the 1st orbital:"
 print *, orbitals(:10, 1)
-!print *, orbitals(:10, 2)
+print *
+print *, "The first 10 values of P(r) and Q(r):"
+print *, P(:10, 1)
+print *, Q(:10, 1)
 print *
 print *, "The first 10 values of the radial charge density:"
 print *, density(:10)
@@ -109,4 +114,6 @@ open(newunit(u), file="density.txt", status="replace")
 write(u, "((es23.16, ' ', es23.16, ' ', es23.16))") (R(i), density(i), V_h(i), &
         i=1, size(R))
 close(u)
+
+call savetxt("enrichment_ks.txt", reshape([R, V_tot, P(:,1), Q(:,1)], [N+1, 4]))
 end program
