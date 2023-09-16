@@ -1,10 +1,10 @@
 # Modify these for your Fortran compiler:
 
 # GFortran
-F90 = gfortran
-F90FLAGS = -Wall -std=f95 -Wextra -Wimplicit-interface -fPIC
+F90 = lfortran
+F90FLAGS =
 # Debug flags:
-F90FLAGS += -g -fbounds-check
+#F90FLAGS +=
 # Release flags:
 #F90FLAGS += -O3 -march=native -ffast-math -funroll-loops
 
