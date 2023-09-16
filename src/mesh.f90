@@ -162,11 +162,36 @@ real(dp) :: s(n)
 s = mesh_exp(a, b, 1.0_dp, n-1)
 end function
 
+subroutine spread_1d_to_2d_dim_1(source, dim, ncopies)
+    real(8), intent(in) :: source(:)
+    integer, intent(in) :: dim, ncopies
+    integer :: i, j
+    real(8) :: output(ncopies, size(source))
+    do i = 1, ncopies
+        do j = 1, size(source)
+            output(i, j) = source(j)
+        end do
+    end do
+end subroutine spread_1d_to_2d_dim_1
+
+subroutine spread_1d_to_2d_dim_2(source, dim, ncopies)
+    real(8), intent(in) :: source(:)
+    integer, intent(in) :: dim, ncopies
+    integer :: i, j, k
+    real(8) :: output(size(source), ncopies)
+    k = 1
+    do i = 1, size(source)
+        do j = 1, ncopies
+            output(i, j) = source(i)
+        end do
+    end do
+end subroutine spread_1d_to_2d_dim_2
+
 subroutine meshgrid(x, y, x2, y2)
 real(dp), intent(in) :: x(:), y(:)
 real(dp), intent(out) :: x2(:, :), y2(:, :)
-x2 = spread(x, 1, size(y))
-y2 = spread(y, 2, size(x))
+x2 = spread_1d_to_2d_dim_1(x, 1, size(y))
+y2 = spread_1d_to_2d_dim_2(y, 2, size(x))
 end subroutine
 
 end module
