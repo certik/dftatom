@@ -162,35 +162,35 @@ real(dp) :: s(n)
 s = mesh_exp(a, b, 1.0_dp, n-1)
 end function
 
-subroutine spread_1d_to_2d_dim_1(source, ncopies, output)
+function spread_1d_to_2d_dim_1(source, ncopies) result(output)
     real(dp), intent(in) :: source(:)
     integer, intent(in) :: ncopies
-    real(dp), intent(out) :: output(ncopies, size(source))
+    real(dp) :: output(ncopies, size(source))
     integer :: i, j
     do i = 1, ncopies
         do j = 1, size(source)
             output(i, j) = source(j)
         end do
     end do
-end subroutine spread_1d_to_2d_dim_1
+end function spread_1d_to_2d_dim_1
 
-subroutine spread_1d_to_2d_dim_2(source, ncopies, output)
+function spread_1d_to_2d_dim_2(source, ncopies) result(output)
     real(dp), intent(in) :: source(:)
     integer, intent(in) :: ncopies
-    real(dp), intent(out) :: output(size(source), ncopies)
+    real(dp) :: output(size(source), ncopies)
     integer :: i, j
     do i = 1, size(source)
         do j = 1, ncopies
             output(i, j) = source(i)
         end do
     end do
-end subroutine spread_1d_to_2d_dim_2
+end function spread_1d_to_2d_dim_2
 
 subroutine meshgrid(x, y, x2, y2)
 real(dp), intent(in) :: x(:), y(:)
 real(dp), intent(out) :: x2(:, :), y2(:, :)
-call spread_1d_to_2d_dim_1(x, size(y), x2)
-call spread_1d_to_2d_dim_2(y, size(x), y2)
+x2 = spread_1d_to_2d_dim_1(x, size(y))
+y2 = spread_1d_to_2d_dim_2(y, size(x))
 end subroutine
 
 end module
