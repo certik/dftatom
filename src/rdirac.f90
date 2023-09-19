@@ -45,9 +45,12 @@ real(dp), dimension(size(R)) :: u1, u2, u1p, u2p
 integer :: i
 real(dp) :: lambda, Delta, M(2, 2), u1_tmp, u2_tmp
 real(dp) :: Vmid(3)
+real(dp) :: tmp(4)
 
 if (size(R) < 4) call stop_error("size(R) <= 4")
-Vmid = get_midpoints(R(:4), V(:4))
+tmp = R(:4)
+Vmid = get_midpoints(tmp, V(:4))
+! Vmid = get_midpoints(R(:4), V(:4))
 call integrate_radial_dirac_r_rk4(c, kappa, Z, E, R(:4), V(:4), Vmid, &
     u1(:4), u2(:4), imax)
 if (imax /= 4) call stop_error("rk4 failed")

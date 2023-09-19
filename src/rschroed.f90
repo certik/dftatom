@@ -54,6 +54,7 @@ integer, intent(out) :: imax ! The integration was carried to R(imax)
 real(dp), dimension(size(R)) :: C, u1, u2, u1p, u2p, Vmid
 integer :: i
 real(dp) :: lambda, Delta, M(2, 2), u1_tmp, u2_tmp
+real(dp) :: tmp(4)
 
 if (size(R) < 5) call stop_error("size(R) < 5")
 if (.not. (size(R) == size(Rp) .and. size(R) == size(V) .and. &
@@ -61,7 +62,9 @@ if (.not. (size(R) == size(Rp) .and. size(R) == size(V) .and. &
     call stop_error("Array sizes mismatch")
 end if
 C = (l*(l+1)/R**2 + 2 * (V-E))
-Vmid(:3) = get_midpoints(R(:4), V(:4))
+tmp = R(:4)
+Vmid(:3) = get_midpoints(tmp, V(:4))
+! Vmid(:3) = get_midpoints(R(:4), V(:4))
 call integrate_rschroed_rk4(l, Z, E, R(:4), V(:4), Vmid(:3), &
     u1(:4), u2(:4), imax)
 !u1(1:4) = R(1:4) ** (l+1)
