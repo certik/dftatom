@@ -83,7 +83,7 @@ end do
 read(u, *) E_tot
 read(u, *) n
 allocate(ks_energies(n))
-backspace(u)
+! backspace(u)
 read(u, *) n, ks_energies
 close(u)
 end subroutine
