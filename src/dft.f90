@@ -24,17 +24,12 @@ subroutine rho2V(d)
 ! Calculates V_xc, V_h and V_tot from rho.
 ! Assumes that d%rho is normalized.
 type(dft_data_t), intent(inout) :: d
-real(dp), dimension(:), pointer :: tmp
 
 call get_Vxc(d%R, d%rho, d%dirac, d%c, d%e_xc, d%V_xc)
-! d%V_h = get_Vh(d%R, d%Rp, d%rho)
-d%V_h => tmp
-tmp = get_Vh(d%R, d%Rp, d%rho)
+d%V_h = get_Vh(d%R, d%Rp, d%rho)
 call total_energy(d%fo, d%ks_energies, d%V_tot, d%V_h, d%V_coulomb, d%e_xc, &
     d%R, d%Rp, d%rho, d%Ekin, d%Ecoul, d%Eenuc, d%Exc, d%Etot)
-! d%V_tot = d%V_coulomb + d%V_xc + d%V_h
-d%V_tot => tmp
-tmp = d%V_coulomb + d%V_xc + d%V_h
+d%V_tot = d%V_coulomb + d%V_xc + d%V_h
 end subroutine
 
 subroutine V2rho(d)
@@ -44,7 +39,6 @@ type(dft_data_t), intent(inout) :: d
 real(dp), dimension(size(d%R)) :: P, Q, Y
 integer :: converged, i, n, l, relat
 real(dp) :: Ein, Emin_init, Emax_init
-real(dp), dimension(:), pointer :: tmp
 
 d%rho(:) = 0
 !print *, d%scf_iter, d%ks_energies
@@ -81,14 +75,10 @@ do i = 1, size(d%no)
     else
         Y = sqrt(P**2 + Q**2) / d%R
     end if
-    d%rho => tmp
-    tmp = d%rho + d%fo(i) * Y**2
-    ! d%rho = d%rho + d%fo(i) * Y**2
+    d%rho = d%rho + d%fo(i) * Y**2
     d%orbitals(:, i) = Y
 end do
-d%rho => tmp
-tmp = d%rho / (4*pi)
-! d%rho = d%rho / (4*pi)
+d%rho = d%rho / (4*pi)
 end subroutine
 
 function KS_step(V, i, d) result(F)
@@ -97,13 +87,10 @@ real(dp), intent(in) :: V(:)
 integer, intent(in) :: i
 type(dft_data_t), intent(inout) :: d
 real(dp) :: F(size(V))
-real(dp), dimension(:), pointer :: tmp
 
 d%scf_iter = i
 ! We converge upon the non-Coulombic part of the potential:
-d%V_tot => tmp
-tmp = d%V_coulomb + V
-! d%V_tot = d%V_coulomb + V
+d%V_tot = d%V_coulomb + V
 call V2rho(d)
 call rho2V(d)
 F = d%V_xc + d%V_h - V
