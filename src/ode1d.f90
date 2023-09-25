@@ -281,8 +281,9 @@ end subroutine
 
 function get_midpoints(R, V) result(Vmid)
 real(dp), intent(in) :: R(:), V(:)
-real(dp) :: Vmid(size(R)-1)
+real(dp), pointer :: Vmid(:)
 integer :: i
+allocate(Vmid(size(R)-1))
 if (.not.(size(R) == size(V))) then
     call stop_error("get_midpoints: incorrect array sizes")
 end if
