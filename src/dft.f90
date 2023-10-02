@@ -24,11 +24,17 @@ subroutine rho2V(d)
 ! Calculates V_xc, V_h and V_tot from rho.
 ! Assumes that d%rho is normalized.
 type(dft_data_t), intent(inout) :: d
+real(dp) :: Ekin, Ecoul, Eenuc, Exc, Etot
 
 call get_Vxc(d%R, d%rho, d%dirac, d%c, d%e_xc, d%V_xc)
 d%V_h = get_Vh(d%R, d%Rp, d%rho)
 call total_energy(d%fo, d%ks_energies, d%V_tot, d%V_h, d%V_coulomb, d%e_xc, &
-    d%R, d%Rp, d%rho, d%Ekin, d%Ecoul, d%Eenuc, d%Exc, d%Etot)
+    d%R, d%Rp, d%rho, Ekin, Ecoul, Eenuc, Exc, Etot)
+d%Ekin = Ekin
+d%Ecoul = Ecoul
+d%Eenuc = Eenuc
+d%Exc = Exc
+d%Etot = Etot
 d%V_tot = d%V_coulomb + d%V_xc + d%V_h
 end subroutine
 
