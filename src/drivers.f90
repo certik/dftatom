@@ -71,7 +71,7 @@ real(dp), pointer :: fo_a(:)
 integer :: i
 real(dp), dimension(size(ks_energies)), target :: Emin_init, Emax_init
 
-real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, V_coulomb, tmp
+real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, V_coulomb, tmp, VtotsubVcoulomb
 type(dft_data_t) :: d
 
 call get_atomic_states_nonrel(Z, no_a, lo_a, fo_a)
@@ -125,7 +125,9 @@ d%Emin_init => Emin_init
 !d%rho = 1 / cosh(d%R)**2
 !d%rho = d%rho * d%Z / integrate(d%Rp, 4*pi*d%rho*d%R**2)
 !call rho2V(d)
-tmp = mixing_anderson(KS_step, d%V_tot - d%V_coulomb, mixing_max_iter, &
+
+VtotsubVcoulomb = d%V_tot - d%V_coulomb
+tmp = mixing_anderson(KS_step, VtotsubVcoulomb, mixing_max_iter, &
     .true., d, mixing_alpha, mixing_eps)
 E_tot = d%Etot
 ! Prints the energies:

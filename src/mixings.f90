@@ -89,7 +89,7 @@ logical, intent(in) :: energy_crit
 type(dft_data_t), intent(inout) :: d ! Data passed to "F"
 real(dp), intent(in) :: alpha
 real(dp), intent(in) :: eps
-real(dp), pointer :: mixing_anderson(:)
+real(dp) :: mixing_anderson(size(x0))
 interface
     function R(x, i, d)
     use types
@@ -109,7 +109,6 @@ real(dp) :: ks_energies(size(d%ks_energies))
 real(dp) :: x_i_norm, R_i_norm
 real(dp) :: err_old, err, L2_err
 integer :: i
-allocate(mixing_anderson(size(x0)))
 x_i = x0
 if (energy_crit) then
     ks_energies = d%ks_energies
