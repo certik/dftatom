@@ -38,11 +38,11 @@ d%Etot = Etot
 d%V_tot = d%V_coulomb + d%V_xc + d%V_h
 end subroutine
 
-subroutine V2rho(d)
+subroutine V2rho(d, size_R)
 ! Calculates rho from V by solving Kohn-Sham equations
 type(dft_data_t), intent(inout) :: d
-
-real(dp), dimension(size(d%R)) :: P, Q, Y, tmp
+integer, intent(in) :: size_R
+real(dp), dimension(size_R) :: P, Q, Y, tmp
 integer :: converged, i, n, l, relat, j
 real(dp) :: Ein, Emin_init, Emax_init, tmp_E
 
@@ -69,7 +69,7 @@ do i = 1, size(d%no)
         d%reigen_max_iter, &
         d%R, d%Rp, d%V_tot, &
         d%Z, d%c, relat, d%perturb, Emin_init, Emax_init, &
-        converged, tmp_E, P, Q)
+        converged, tmp_E, P, Q, size(d%R))
     d%ks_energies(i) = tmp_E
     if (converged /= 0) then
         print *, "converged=", converged
@@ -101,7 +101,7 @@ real(dp) :: F(size(V))
 d%scf_iter = i
 ! We converge upon the non-Coulombic part of the potential:
 d%V_tot = d%V_coulomb + V
-call V2rho(d)
+call V2rho(d, size(d%R))
 call rho2V(d)
 F = d%V_xc + d%V_h - V
 end function

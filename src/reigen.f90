@@ -116,7 +116,7 @@ is_E_above = nods_actual > n-l-1
 end function
 
 subroutine solve_radial_eigenproblem(n, l, Ein, eps, max_iter, &
-    R, Rp, V, Z, c, relat, perturb, Emin_init, Emax_init, converged, E, P, Q)
+    R, Rp, V, Z, c, relat, perturb, Emin_init, Emax_init, converged, E, P, Q, size_R)
 ! Solves the radial Dirac (Schroedinger) equation and returns the eigenvalue
 ! (E) and normalized eigenvector (P, Q) for the given "n" and "l".
 !
@@ -152,7 +152,7 @@ subroutine solve_radial_eigenproblem(n, l, Ein, eps, max_iter, &
 !    the perturbation theory starts to converge, and then use perturbation to
 !    finish it. If perturbation does not converge, we need to fail over to
 !    bisection.
-integer, intent(in) :: n, l, relat, Z, max_iter
+integer, intent(in) :: n, l, relat, Z, max_iter, size_R
 real(dp), intent(in) :: R(:), Rp(:), V(:), eps, Ein, c
 logical, intent(in) :: perturb
 real(dp), intent(in) :: Emin_init, Emax_init
@@ -160,7 +160,7 @@ integer, intent(out) :: converged
 real(dp), intent(out) :: P(:), Q(:), E
 
 
-real(dp) :: Emin, Emax, dE, Pr(size(R)), Qr(size(R)), factor, S
+real(dp) :: Emin, Emax, dE, Pr(size_R), Qr(size_R), factor, S
 integer :: minidx, ctp, iter
 logical :: isbig
 integer :: nnodes
@@ -233,22 +233,22 @@ do while (iter < max_iter)
     ! we can't use inward integration to correct the energy, so we use
     ! bisection. Also use bisection if the user requests it.
     if (.not. perturb) then
-        ctp = size(R)
+        ctp = size_R
     else if (ctp == 0) then
-        ctp = size(R)
-    else if (R(ctp) / R(size(R)) > 0.5_dp) then
-        ctp = size(R)
-    else if (size(R) - ctp <= 10) then
-        ctp = size(R)
+        ctp = size_R
+    else if (R(ctp) / R(size_R) > 0.5_dp) then
+        ctp = size_R
+    else if (size_R - ctp <= 10) then
+        ctp = size_R
     else if (E >= 0) then
         ! Also do bisection for positive energies, as we cannot use inward
         ! integration for these
-        ctp = size(R)
+        ctp = size_R
     end if
     call integrate_rproblem_outward(l, E, R(:ctp), Rp(:ctp), V(:ctp), &
         Z, c, relat, P(:ctp), Q(:ctp), imax)
     nnodes = get_n_nodes(P(:imax))
-    if (nnodes /= n-l-1 .or. ctp == size(R) .or. imax < ctp) then
+    if (nnodes /= n-l-1 .or. ctp == size_R .or. imax < ctp) then
         ! If the number of nodes is not correct, or we didn't manage to
         ! integrate all the way to "ctp", or if "ctp" was too large, we just
         ! use bisection:
