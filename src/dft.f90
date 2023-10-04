@@ -44,7 +44,7 @@ type(dft_data_t), intent(inout) :: d
 
 real(dp), dimension(size(d%R)) :: P, Q, Y, tmp
 integer :: converged, i, n, l, relat, j
-real(dp) :: Ein, Emin_init, Emax_init
+real(dp) :: Ein, Emin_init, Emax_init, tmp_E
 
 d%rho(:) = 0
 !print *, d%scf_iter, d%ks_energies
@@ -64,11 +64,13 @@ do i = 1, size(d%no)
     Emax_init = d%Emax_init(i)
     Emin_init = d%Emin_init(i)
 
+    tmp_E = d%ks_energies(i)
     call solve_radial_eigenproblem(n, l, Ein, d%reigen_eps, &
         d%reigen_max_iter, &
         d%R, d%Rp, d%V_tot, &
         d%Z, d%c, relat, d%perturb, Emin_init, Emax_init, &
-        converged, d%ks_energies(i), P, Q)
+        converged, tmp_E, P, Q)
+    d%ks_energies(i) = tmp_E
     if (converged /= 0) then
         print *, "converged=", converged
         print *, d%scf_iter, n, l, relat
