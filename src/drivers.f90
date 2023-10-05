@@ -69,10 +69,12 @@ logical, intent(in) :: perturb
 integer, pointer :: no_a(:), lo_a(:)
 real(dp), pointer :: fo_a(:)
 integer :: i
-real(dp), dimension(size(ks_energies)), target :: Emin_init, Emax_init
-
-real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, V_coulomb, tmp, VtotsubVcoulomb
+real(dp), allocatable, dimension(:), target :: Emin_init, Emax_init
+real(dp), allocatable, dimension(:), target :: V_h, V_xc, e_xc, V_coulomb, tmp, VtotsubVcoulomb
 type(dft_data_t) :: d
+allocate(Emin_init(size(ks_energies)), Emax_init(size(ks_energies)))
+allocate(V_h(size(R)), V_xc(size(R)), e_xc(size(R)), V_coulomb(size(R)), &
+    tmp(size(R)), VtotsubVcoulomb(size(R)))
 
 call get_atomic_states_nonrel(Z, no_a, lo_a, fo_a)
 no = no_a
