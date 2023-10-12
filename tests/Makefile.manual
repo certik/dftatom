@@ -6,13 +6,13 @@ export LDFLAGS
 all:
 	cd lda; make -f Makefile.manual
 	cd lda; make -f Makefile_6.manual
-	# cd rlda; make -f Makefile.manual
+	cd rlda; make -f Makefile.manual
 	cd atom_U; make -f Makefile.manual
 
 test:
 	cd lda; make -f Makefile.manual test
 	cd lda; make -f Makefile_6.manual test
-	# cd rlda; make -f Makefile.manual test
+	cd rlda; make -f Makefile.manual test
 	cd atom_U; make -f Makefile.manual test
 
 clean:
