@@ -138,6 +138,7 @@ E_tot = d%Etot
 !print *, "Eenuc:", d%Eenuc
 !print *, "Exc:  ", d%Exc
 !print *, "E_tot:", d%Ekin + d%Ecoul + d%Eenuc + d%Exc
+
 end subroutine
 
 subroutine atom_rlda(Z, r_min, r_max, a, N, c, no, lo, so, fo, ks_energies, &

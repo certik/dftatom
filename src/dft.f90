@@ -42,12 +42,12 @@ subroutine V2rho(d, size_R)
 ! Calculates rho from V by solving Kohn-Sham equations
 type(dft_data_t), intent(inout) :: d
 integer, intent(in) :: size_R
-real(dp), dimension(size_R) :: P, Q, Y, tmp
+real(dp), allocatable :: P(:), Q(:), Y(:), tmp(:)
 integer :: converged, i, n, l, relat, j
 real(dp) :: Ein, Emin_init, Emax_init, tmp_E
 
+allocate(P(size_R), Q(size_R), Y(size_R), tmp(size_R))
 d%rho(:) = 0
-!print *, d%scf_iter, d%ks_energies
 do i = 1, size(d%no)
     n = d%no(i)
     l = d%lo(i)
@@ -72,8 +72,6 @@ do i = 1, size(d%no)
         converged, tmp_E, P, Q, size(d%R))
     d%ks_energies(i) = tmp_E
     if (converged /= 0) then
-        print *, "converged=", converged
-        print *, d%scf_iter, n, l, relat
         !print *, "skipping the state"
         !Y = 0
         call stop_error("V2rho: Radial eigen problem didn't converge")
@@ -89,6 +87,7 @@ do i = 1, size(d%no)
     d%orbitals(:, i) = Y
 end do
 d%rho = d%rho / (4*pi)
+deallocate(P, Q, Y, tmp)
 end subroutine
 
 function KS_step(V, i, d) result(F)

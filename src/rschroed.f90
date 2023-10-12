@@ -50,12 +50,15 @@ real(dp), intent(in) :: V(:)
 real(dp), intent(out) :: P(:), Q(:)
 real(dp), parameter :: max_val = 1e6_dp
 integer, intent(out) :: imax ! The integration was carried to R(imax)
+integer :: size_R
 
-real(dp), dimension(size(R)) :: C, u1, u2, u1p, u2p, Vmid
+real(dp), allocatable :: C(:), u1(:), u2(:), u1p(:), u2p(:), Vmid(:)
 integer :: i
 real(dp) :: lambda, Delta, M(2, 2), u1_tmp, u2_tmp
 real(dp) :: tmp(4)
 
+size_R = size(R)
+allocate(C(size_R), u1(size_R), u2(size_R), u1p(size_R), u2p(size_R), Vmid(size_R))
 if (size(R) < 5) call stop_error("size(R) < 5")
 if (.not. (size(R) == size(Rp) .and. size(R) == size(V) .and. &
     size(R) == size(P) .and. size(R) == size(P) .and. size(R) == size(Q))) then
@@ -72,7 +75,7 @@ call integrate_rschroed_rk4(l, Z, E, R(:4), V(:4), Vmid(:3), &
 u1p(1:4) = Rp(1:4)          * u2(1:4)
 u2p(1:4) = Rp(1:4) * C(1:4) * u1(1:4)
 
-do i = 4, size(R)-1
+do i = 4, size_R-1
     u1p(i) = Rp(i)        * u2(i)
     u2p(i) = Rp(i) * C(i) * u1(i)
     u1_tmp  = u1(i) + adams_interp_outward_implicit(u1p, i)
@@ -91,12 +94,14 @@ do i = 4, size(R)-1
         P = u1
         Q = u2
         imax = i
+        deallocate(C, u1, u2, u1p, u2p, Vmid)
         return
     end if
 end do
 P = u1
 Q = u2
 imax = size(R)
+deallocate(C, u1, u2, u1p, u2p, Vmid)
 end subroutine
 
 subroutine schroed_inward_adams(l, E, R, Rp, V, P, Q, imin)

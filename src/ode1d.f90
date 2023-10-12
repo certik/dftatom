@@ -163,14 +163,20 @@ end subroutine
 integer function get_n_nodes(y) result(nodes)
 ! Returns the number of nodes of the function 'y'
 real(dp), intent(in) :: y(:)
+integer :: sizey
 
 integer :: last_sign, last_i, i, isy
 nodes = 0
 last_sign = int(sign(1.0_dp, y(1)))
 last_i = -1
+sizey = size(y)
 
-do i = 2, size(y)
-  isy = int(sign(1.0_dp, y(i)))
+do i = 2, sizey
+  if( y(i) >= 0 ) then
+    isy = 1
+  else
+    isy = -1
+  end if
   if (isy == -last_sign) then
       last_sign = isy
       last_i = i - 1
@@ -281,9 +287,8 @@ end subroutine
 
 function get_midpoints(R, V) result(Vmid)
 real(dp), intent(in) :: R(:), V(:)
-real(dp), pointer :: Vmid(:)
+real(dp) :: Vmid(size(R)-1)
 integer :: i
-allocate(Vmid(size(R)-1))
 if (.not.(size(R) == size(V))) then
     call stop_error("get_midpoints: incorrect array sizes")
 end if
