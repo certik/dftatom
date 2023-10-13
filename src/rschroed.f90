@@ -14,7 +14,7 @@ public schroed_outward_adams, schroed_inward_adams
 
 contains
 
-subroutine schroed_outward_adams(l, Z, E, R, Rp, V, P, Q, imax)
+subroutine schroed_outward_adams(l, Z, E, R, Rp, V, P, Q, imax, size_R)
 ! Integrates the Schrodinger equation outward using Adams 4th order method
 !
 ! It integrates the Schroedinger equation in the P(r), Q(r) form outwards using
@@ -50,15 +50,13 @@ real(dp), intent(in) :: V(:)
 real(dp), intent(out) :: P(:), Q(:)
 real(dp), parameter :: max_val = 1e6_dp
 integer, intent(out) :: imax ! The integration was carried to R(imax)
-integer :: size_R
+integer, intent(in) :: size_R
 
-real(dp), allocatable :: C(:), u1(:), u2(:), u1p(:), u2p(:), Vmid(:)
+real(dp), dimension(size_R) :: C, u1, u2, u1p, u2p, Vmid
 integer :: i
 real(dp) :: lambda, Delta, M(2, 2), u1_tmp, u2_tmp
 real(dp) :: tmp(4)
 
-size_R = size(R)
-allocate(C(size_R), u1(size_R), u2(size_R), u1p(size_R), u2p(size_R), Vmid(size_R))
 if (size(R) < 5) call stop_error("size(R) < 5")
 if (.not. (size(R) == size(Rp) .and. size(R) == size(V) .and. &
     size(R) == size(P) .and. size(R) == size(P) .and. size(R) == size(Q))) then
@@ -94,14 +92,12 @@ do i = 4, size_R-1
         P = u1
         Q = u2
         imax = i
-        deallocate(C, u1, u2, u1p, u2p, Vmid)
         return
     end if
 end do
 P = u1
 Q = u2
 imax = size(R)
-deallocate(C, u1, u2, u1p, u2p, Vmid)
 end subroutine
 
 subroutine schroed_inward_adams(l, E, R, Rp, V, P, Q, imin)

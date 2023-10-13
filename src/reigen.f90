@@ -45,7 +45,7 @@ integer, intent(out) :: imax
 integer :: kappa
 
 if (relat == 0) then
-    call schroed_outward_adams(l, Z, E, R, Rp, V, P, Q, imax)
+    call schroed_outward_adams(l, Z, E, R, Rp, V, P, Q, imax, size(R))
 else if (relat == 1) then
     call stop_error("Scalar relativistic case not implemented")
 else if (relat == 2 .or. relat == 3) then
@@ -161,13 +161,12 @@ real(dp), intent(out) :: P(:), Q(:), E
 
 
 real(dp) :: Emin, Emax, dE, factor, S
-real(dp), allocatable :: Pr(:), Qr(:)
+real(dp) :: Pr(sizeR), Qr(sizeR)
 integer :: minidx, ctp, iter
 logical :: isbig
 integer :: nnodes
 logical :: last_bisect
 integer :: imin, imax
-allocate(Pr(sizeR), Qr(sizeR))
 E = Ein
 if (.not.(n > 0)) call stop_error("n > 0 not satisfied")
 if (.not.((0 <= l).and.(l < n))) call stop_error("0 <= l < n not satisfied")
@@ -339,7 +338,6 @@ else
 end if
 
 converged = 0
-deallocate(Pr, Qr)
 end subroutine
 
 integer function find_ctp(V, E) result(ctp)

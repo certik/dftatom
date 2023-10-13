@@ -30,7 +30,7 @@ real(dp) :: eps
 real(dp), allocatable :: R(:), Rp(:), V_tot(:), density(:)
 integer :: p
 
-do p = 3, 5
+do p = 3, 8
     eps = 10.0_dp**(-p)
     eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
     print *, "Test eps:", eps

@@ -1,7 +1,7 @@
 # Modify these for your Fortran compiler:
 
 # GFortran
-F90 = lfortran
+F90 = lfortran --fast
 F90FLAGS =
 # Debug flags:
 #F90FLAGS +=
