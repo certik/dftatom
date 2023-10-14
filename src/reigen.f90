@@ -161,7 +161,7 @@ real(dp), intent(out) :: P(:), Q(:), E
 
 
 real(dp) :: Emin, Emax, dE, factor, S
-real(dp) :: Pr(sizeR), Qr(sizeR)
+real(dp) :: Pr(sizeR), Qr(sizeR), lbyR(sizeR), VpluslbyR(sizeR), Rsq(sizeR)
 integer :: minidx, ctp, iter
 logical :: isbig
 integer :: nnodes
@@ -228,7 +228,10 @@ do while (iter < max_iter)
         exit
     end if
 
-    ctp = find_ctp(V + l*(l+1)/(2*R**2), E)
+    Rsq = R**2
+    lbyR = l*(l+1)/(2*Rsq)
+    VpluslbyR = V + lbyR
+    ctp = find_ctp(VpluslbyR, E)
     ! If the classical turning point is too large (or cannot be found at all),
     ! we can't use inward integration to correct the energy, so we use
     ! bisection. Also use bisection if the user requests it.
