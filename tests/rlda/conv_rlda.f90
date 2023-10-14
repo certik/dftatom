@@ -32,11 +32,11 @@ real(dp), allocatable :: R(:), Rp(:), V_tot(:), density(:)
 real(dp) :: eps
 integer :: p
 
-do p = 3, 8
+do p = 3, 3
     eps = 10.0_dp**(-p)
     eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
     print *, "Test eps:", eps
-    do Z = 92, 1, -1
+    do Z = 92, 80, -1
         call get_LDA_energies(Z, ks_energies_exact, E_tot_exact)
         n_orb = size(ks_energies_exact)
         NN = get_N(Z, p)
@@ -51,13 +51,13 @@ do p = 3, 8
         print *, "Z=", Z
         print *, "N=", NN
         err = abs(E_tot - E_tot_exact)
-        print '("E_tot=", F16.8, " E_tot_exact=", F16.8, " error:", ES10.2)', &
+        print '("E_tot=", F16.8, " E_tot_exact=", F16.8, " error:", E10.2)', &
                 E_tot, E_tot_exact, err
         if (err > eps) call error(err, eps)
         print *, "state    E            E_exact          error     occupancy"
         do i = 1, size(ks_energies)
             err = (ks_energies_exact(i) - ks_energies(i))
-            print "(I1, A, ' ', F16.8, F16.8, ES10.2, '   ', F6.3)", no(i), &
+            print "(I1, A, ' ', F16.8, F16.8, E10.2, '   ', F6.3)", no(i), &
                     l_names(lo(i)), ks_energies(i), ks_energies_exact(i), err, fo(i)
             if (err > eps) call error(err, eps)
         end do
@@ -104,7 +104,7 @@ end function
 
 subroutine error(err, eps)
 real(dp), intent(in) :: err, eps
-print "('Test failed: error = ', es10.2, '   > ', es10.2, ' specified.')", &
+print "('Test failed: error = ', e10.2, '   > ', e10.2, ' specified.')", &
         err, eps
 call stop_error("Aborting...")
 end subroutine

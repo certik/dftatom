@@ -1,4 +1,4 @@
-program conv_lda
+program conv_lda_6
 ! Calculates the DFT nonrelativistic energies for Z=92 (U)
 !
 ! The purpose of this test is to check that:
@@ -28,39 +28,37 @@ real(dp), pointer, dimension(:) :: ks_energies_exact
 real(dp), allocatable :: orbitals(:, :)
 real(dp) :: eps
 real(dp), allocatable :: R(:), Rp(:), V_tot(:), density(:)
-integer :: p
+integer :: p = 6
 
-do p = 3, 8
-    eps = 10.0_dp**(-p)
-    eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
-    print *, "Test eps:", eps
-    do Z = 92, 1, -1
-        n_orb = get_atom_orb(Z)
-        NN = get_N(Z, p)
-        allocate(ks_energies(n_orb), no(n_orb), &
-            lo(n_orb), fo(n_orb), orbitals(NN+1, n_orb), R(NN+1), V_tot(NN+1), &
-            density(NN+1), Rp(NN+1))
-        call atom_lda(Z, r_min, r_max, a, NN, no, lo, fo, ks_energies, E_tot, &
-            R, Rp, V_tot, density, orbitals, reigen_eps, 100, mixing_eps, &
-            0.5_dp, 200, .true.)
-        call get_LDA_energies(Z, ks_energies_exact, E_tot_exact)
+eps = 10.0_dp**(-p)
+eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
+print *, "Test eps:", eps
+do Z = 92, 1, -1
+    n_orb = get_atom_orb(Z)
+    NN = get_N(Z, p)
+    allocate(ks_energies(n_orb), no(n_orb), &
+        lo(n_orb), fo(n_orb), orbitals(NN+1, n_orb), R(NN+1), V_tot(NN+1), &
+        density(NN+1), Rp(NN+1))
+    call atom_lda(Z, r_min, r_max, a, NN, no, lo, fo, ks_energies, E_tot, &
+        R, Rp, V_tot, density, orbitals, reigen_eps, 100, mixing_eps, &
+        0.5_dp, 200, .true.)
+    call get_LDA_energies(Z, ks_energies_exact, E_tot_exact)
 
-        print *, "Z=", Z
-        print *, "N=", NN
-        err = abs(E_tot - E_tot_exact)
-        print '("E_tot=", F18.10, " E_tot_exact=", F18.10, " error:", E10.2)', &
-                E_tot, E_tot_exact, err
+    print *, "Z=", Z
+    print *, "N=", NN
+    err = abs(E_tot - E_tot_exact)
+    print '("E_tot=", F18.10, " E_tot_exact=", F18.10, " error:", E10.2)', &
+            E_tot, E_tot_exact, err
+    if (err > eps) call error(err, eps)
+    print *, "state    E            E_exact          error     occupancy"
+    do i = 1, size(ks_energies)
+        err = (ks_energies_exact(i) - ks_energies(i))
+        print "(I1, A, ' ', F18.10, F18.10, E10.2, '   ', F6.3)", no(i), &
+                l_names(lo(i)), ks_energies(i), ks_energies_exact(i), err, fo(i)
         if (err > eps) call error(err, eps)
-        print *, "state    E            E_exact          error     occupancy"
-        do i = 1, size(ks_energies)
-            err = (ks_energies_exact(i) - ks_energies(i))
-            print "(I1, A, ' ', F18.10, F18.10, E10.2, '   ', F6.3)", no(i), &
-                    l_names(lo(i)), ks_energies(i), ks_energies_exact(i), err, fo(i)
-            if (err > eps) call error(err, eps)
-        end do
-        deallocate(ks_energies, ks_energies_exact, no, lo, fo, orbitals, R, V_tot, &
-            density, Rp)
     end do
+    deallocate(ks_energies, ks_energies_exact, no, lo, fo, orbitals, R, V_tot, &
+        density, Rp)
 end do
 
 contains

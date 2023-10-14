@@ -55,14 +55,17 @@ call integrate_radial_dirac_r_rk4(c, kappa, Z, E, R(:4), V(:4), Vmid, &
     u1(:4), u2(:4), imax)
 if (imax /= 4) call stop_error("rk4 failed")
 
-Ctot(:, 1, 1) = -kappa / R
-Ctot(:, 2, 2) = +kappa / R
-Ctot(:, 1, 2) = +(E-V)/c + 2*c
-Ctot(:, 2, 1) = -(E-V)/c
+do i = 1, size(R)
+    Ctot(i, 1, 1) = -kappa / R(i)
+    Ctot(i, 2, 2) = +kappa / R(i)
+    Ctot(i, 1, 2) = +(E-V(i))/c + 2*c
+    Ctot(i, 2, 1) = -(E-V(i))/c
+end do
 
-u1p(:4) = Rp(:4) * (Ctot(:4, 1, 1) * u1(:4) + Ctot(:4, 1, 2) * u2(:4))
-u2p(:4) = Rp(:4) * (Ctot(:4, 2, 1) * u1(:4) + Ctot(:4, 2, 2) * u2(:4))
-
+do i = 1, 4
+    u1p(i) = Rp(i) * (Ctot(i, 1, 1) * u1(i) + Ctot(i, 1, 2) * u2(i))
+    u2p(i) = Rp(i) * (Ctot(i, 2, 1) * u1(i) + Ctot(i, 2, 2) * u2(i))
+end do
 do i = 4, size(R)-1
     u1p(i) = Rp(i) * (Ctot(i, 1, 1)*u1(i) + Ctot(i, 1, 2)*u2(i))
     u2p(i) = Rp(i) * (Ctot(i, 2, 1)*u1(i) + Ctot(i, 2, 2)*u2(i))
@@ -146,20 +149,24 @@ end do
 u1(i_max+4:) = 0
 u2(i_max+4:) = 0
 
-u1(i_max:i_max+4) = exp(-lambda * (R(i_max:i_max+4)-R(1))) / sqrt(-E/(E+2*c**2))
-u2(i_max:i_max+4) = -exp(-lambda * (R(i_max:i_max+4)-R(1)))
-
-Ctot(:, 1, 1) = -kappa / R
-Ctot(:, 2, 2) = +kappa / R
-Ctot(:, 1, 2) = +(E-V)/c + 2*c
-Ctot(:, 2, 1) = -(E-V)/c
-
-u1p(i_max:i_max+4) = Rp(i_max:i_max+4) * &
-    (Ctot(i_max:i_max+4, 1, 1)*u1(i_max:i_max+4) &
-        + Ctot(i_max:i_max+4, 1, 2) * u2(i_max:i_max+4))
-u2p(i_max:i_max+4) = Rp(i_max:i_max+4) * &
-    (Ctot(i_max:i_max+4, 2, 1)*u1(i_max:i_max+4) &
-        + Ctot(i_max:i_max+4, 2, 2) * u2(i_max:i_max+4))
+do i = i_max, i_max+4
+    u1(i) = exp(-lambda * (R(i)-R(1))) / sqrt(-E/(E+2*c**2))
+    u2(i) = -exp(-lambda * (R(i)-R(1)))
+end do
+do i = 1, size(R)
+    Ctot(i, 1, 1) = -kappa / R(i)
+    Ctot(i, 2, 2) = +kappa / R(i)
+    Ctot(i, 1, 2) = +(E-V(i))/c + 2*c
+    Ctot(i, 2, 1) = -(E-V(i))/c
+end do
+do i = i_max, i_max+4
+    u1p(i) = Rp(i) * &
+        (Ctot(i, 1, 1)*u1(i) &
+            + Ctot(i, 1, 2) * u2(i))
+    u2p(i) = Rp(i) * &
+        (Ctot(i, 2, 1)*u1(i) &
+            + Ctot(i, 2, 2) * u2(i))
+end do
 
 do i = i_max, 2, -1
     u1p(i) = Rp(i) * (Ctot(i, 1, 1)*u1(i) + Ctot(i, 1, 2)*u2(i))
@@ -285,7 +292,7 @@ real(dp), dimension(size(R)-1, 2, 2) :: Cmid
 real(dp), dimension(size(R)-1) :: Rmid
 
 real(dp) :: beta, Z1
-integer :: l
+integer :: l, i
 
 beta = sqrt(kappa**2-(Z/c)**2)
 if (Z /= 0) then
@@ -304,16 +311,21 @@ else
     end if
 end if
 
-Ctot(:, 1, 1) = -kappa / R
-Ctot(:, 2, 2) = +kappa / R
-Ctot(:, 1, 2) = +(E-V)/c + 2*c
-Ctot(:, 2, 1) = -(E-V)/c
-
-Rmid = (R(:size(R)-1) + R(2:)) / 2
-Cmid(:, 1, 1) = -kappa / Rmid
-Cmid(:, 2, 2) = +kappa / Rmid
-Cmid(:, 1, 2) = +(E-Vmid)/c + 2*c
-Cmid(:, 2, 1) = -(E-Vmid)/c
+do i = 1, size(R)
+    Ctot(i, 1, 1) = -kappa / R(i)
+    Ctot(i, 2, 2) = +kappa / R(i)
+    Ctot(i, 1, 2) = +(E-V(i))/c + 2*c
+    Ctot(i, 2, 1) = -(E-V(i))/c
+end do
+do i = 1, size(Rmid)
+    Rmid(i) = (R(i) + R(i+1)) / 2
+end do
+do i = 1, size(R) - 1
+    Cmid(i, 1, 1) = -kappa / Rmid(i)
+    Cmid(i, 2, 2) = +kappa / Rmid(i)
+    Cmid(i, 1, 2) = +(E-Vmid(i))/c + 2*c
+    Cmid(i, 2, 1) = -(E-Vmid(i))/c
+end do
 call rk4_integrate4(R, y, Ctot, Cmid, max_val, P, Q, imax)
 end subroutine
 
