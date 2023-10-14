@@ -1,4 +1,0 @@
-PROG = conv_lda_6
-OBJS = conv_lda_6.o
-
-include ../Makefile.manual.mk
