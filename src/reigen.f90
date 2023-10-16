@@ -176,8 +176,7 @@ if (E > Emax .or. E < Emin) E = (Emin + Emax) / 2
 
 iter = 0
 last_bisect = .true.
-do while (iter < max_iter)
-    iter = iter + 1
+l1: do iter = 0, max_iter - 1
 
     ! See if bisection is converged
     if (abs(Emax - Emin) < eps) then
@@ -263,7 +262,7 @@ do while (iter < max_iter)
         end if
         E = (Emin + Emax) / 2
         last_bisect = .true.
-        cycle
+        cycle l1
     end if
 
     ! Perturbation theory correction
@@ -317,7 +316,7 @@ do while (iter < max_iter)
         E = E + dE
         last_bisect = .false.
     end if
-end do
+end do l1
 if (iter == max_iter) then
     ! We didn't converge in 'max_iter' iterations
     converged = 2
