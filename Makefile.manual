@@ -1,7 +1,7 @@
 # Modify these for your Fortran compiler:
 
 # GFortran
-F90 = lfortran --skip-pass=inline_function_calls,fma --fast
+F90 = lfortran
 F90FLAGS =
 # F90 = gfortran
 # F90FLAGS = -Wall -std=f95 -Wextra -Wimplicit-interface -fPIC
