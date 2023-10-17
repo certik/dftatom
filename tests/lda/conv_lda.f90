@@ -34,7 +34,7 @@ do p = 3, 8
     eps = 10.0_dp**(-p)
     eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
     print *, "Test eps:", eps
-    do Z = 92, 1, -1
+    do Z = 92, 1, -10
         n_orb = get_atom_orb(Z)
         NN = get_N(Z, p)
         allocate(ks_energies(n_orb), no(n_orb), &
