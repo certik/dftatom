@@ -159,15 +159,12 @@ logical, intent(in) :: perturb
 
 integer, pointer :: no_a(:), lo_a(:), so_a(:)
 real(dp), pointer :: fo_a(:)
-real(dp), allocatable, dimension(:), target :: Emin_init, Emax_init
+real(dp), dimension(size(ks_energies)), target :: Emin_init, Emax_init
 integer :: i, relat
 
-real(dp), allocatable, dimension(:), target :: V_h, V_xc, e_xc, V_coulomb, tmp, VtotsubVcoulomb
+real(dp), dimension(size(R)), target :: V_h, V_xc, e_xc, V_coulomb, tmp
 type(dft_data_t) :: d
 
-allocate(Emin_init(size(ks_energies)), Emax_init(size(ks_energies)))
-allocate(V_h(size(R)), V_xc(size(R)), e_xc(size(R)), V_coulomb(size(R)), &
-    tmp(size(R)), VtotsubVcoulomb(size(R)))
 call get_atomic_states_rel(Z, no_a, lo_a, so_a, fo_a)
 no = no_a
 lo = lo_a
@@ -226,8 +223,7 @@ d%Emin_init => Emin_init
 d%c = c
 d%so => so
 
-VtotsubVcoulomb = d%V_tot - d%V_coulomb
-tmp = mixing_anderson(KS_step, VtotsubVcoulomb, mixing_max_iter, &
+tmp = mixing_anderson(KS_step, d%V_tot - d%V_coulomb, mixing_max_iter, &
     .true., d, mixing_alpha, mixing_eps)
 E_tot = d%Etot
 end subroutine
