@@ -69,14 +69,14 @@ jobs:
 
       - uses: mamba-org/setup-micromamba@v1
         with:
-          init-shell: bash
           environment-name: lf
           create-args: >-
             lfortran=0.23.0
 
       - name: Print installed packages information
-        shell: bash -exl {0}
+        shell: bash -l {0}
         run: |
+            set -ex
             ! which lfortran
             micromamba env list
             micromamba activate lf
@@ -84,7 +84,7 @@ jobs:
             which lfortran
 
       - name: Build dftatom manual
-        shell: bash -exl {0}
+        shell: bash -l {0}
         run: |
           set -ex
           make -f Makefile.manual F90=lfortran F90FLAGS="-I../../src"
