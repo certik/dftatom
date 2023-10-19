@@ -73,7 +73,7 @@ jobs:
       - name: Print installed packages information
         run: |
             set -ex
-            which lfortran
+            ! which lfortran
             micromamba env list
             micromamba activate lf
             micromamba list
