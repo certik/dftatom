@@ -72,7 +72,7 @@ jobs:
           init-shell: bash
           environment-name: lf
           create-args: >-
-            lfortran=0.22.0
+            lfortran=0.23.0
 
       - name: Print installed packages information
         shell: bash -exl {0}
