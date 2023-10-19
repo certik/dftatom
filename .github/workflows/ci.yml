@@ -62,6 +62,7 @@ jobs:
           set -ex
           sudo apt-get update
           sudo apt-get install -y python3-numpy cython3 python3-pytest
+          sudo ln -s /usr/bin/cython3 /usr/bin/cython
 
       - name: Build dftatom cmake python
         run: |
