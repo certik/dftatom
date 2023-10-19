@@ -32,9 +32,14 @@ if(WITH_C_INTERFACE)
 endif()
 
 add_library(dftatom SHARED ${SRC})
+target_include_directories(dftatom PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
+    $<INSTALL_INTERFACE:include/dftatom>
+)
 target_link_libraries(dftatom ${LIBS})
 install(TARGETS dftatom
             RUNTIME DESTINATION bin
             ARCHIVE DESTINATION lib
             LIBRARY DESTINATION lib
         )
+install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/ DESTINATION include/dftatom)
