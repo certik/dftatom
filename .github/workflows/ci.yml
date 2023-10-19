@@ -1,0 +1,80 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build_fortran:
+    name: Fortran build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build dftatom manual
+        run: |
+          set -ex
+          make -f Makefile.manual
+          ./tests/atom_U/F_atom_U
+          git clean -dfx
+
+      - name: Build dftatom cmake
+        run: |
+          set -ex
+          cmake \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_INSTALL_PREFIX="inst" \
+            -DWITH_PYTHON=NO \
+            -DWITH_LAPACK=NO \
+            -DCMAKE_INSTALL_RPATH:STRING="inst/lib" \
+            -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=ON \
+            .
+          make
+          make install
+          ./tests/atom_U/F_atom_U
+
+      - name: Build dftatom cmake lapack
+        run: |
+          set -ex
+          cmake \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_INSTALL_PREFIX="inst" \
+            -DWITH_PYTHON=NO \
+            -DWITH_LAPACK=YES \
+            -DCMAKE_INSTALL_RPATH:STRING="inst/lib" \
+            -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=ON \
+            .
+          make
+          make install
+          ./tests/atom_U/F_atom_U
+
+  build_python:
+    name: Python build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install packages
+        run: |
+          set -ex
+          sudo apt-get update
+          sudo apt-get install -y python3-numpy cython3 python3-pytest
+          sudo ln -s /usr/bin/cython3 /usr/bin/cython
+          sudo ln -s /usr/bin/pytest-3 /usr/bin/pytest
+
+      - name: Build dftatom cmake python
+        run: |
+          set -ex
+          cmake \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_INSTALL_PREFIX="inst" \
+            -DWITH_PYTHON=YES \
+            -DWITH_LAPACK=NO \
+            -DCMAKE_INSTALL_RPATH:STRING="inst/lib" \
+            -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=ON \
+            .
+          make
+          PYTHONPATH=. pytest -v

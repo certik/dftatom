@@ -9,7 +9,7 @@ implicit none
 
 private
 public mesh_exp, mesh_exp_deriv, get_mesh_exp_params, mesh_exp_deriv2, &
-    linspace, meshgrid
+    linspace
 
 contains
 
@@ -161,36 +161,5 @@ integer, intent(in) :: n
 real(dp) :: s(n)
 s = mesh_exp(a, b, 1.0_dp, n-1)
 end function
-
-function spread_1d_to_2d_dim_1(source, ncopies) result(output)
-    real(dp), intent(in) :: source(:)
-    integer, intent(in) :: ncopies
-    real(dp) :: output(ncopies, size(source))
-    integer :: i, j
-    do i = 1, ncopies
-        do j = 1, size(source)
-            output(i, j) = source(j)
-        end do
-    end do
-end function spread_1d_to_2d_dim_1
-
-function spread_1d_to_2d_dim_2(source, ncopies) result(output)
-    real(dp), intent(in) :: source(:)
-    integer, intent(in) :: ncopies
-    real(dp) :: output(size(source), ncopies)
-    integer :: i, j
-    do i = 1, size(source)
-        do j = 1, ncopies
-            output(i, j) = source(i)
-        end do
-    end do
-end function spread_1d_to_2d_dim_2
-
-subroutine meshgrid(x, y, x2, y2)
-real(dp), intent(in) :: x(:), y(:)
-real(dp), intent(out) :: x2(:, :), y2(:, :)
-x2 = spread_1d_to_2d_dim_1(x, size(y))
-y2 = spread_1d_to_2d_dim_2(y, size(x))
-end subroutine
 
 end module
