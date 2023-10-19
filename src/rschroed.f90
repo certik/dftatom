@@ -14,7 +14,7 @@ public schroed_outward_adams, schroed_inward_adams
 
 contains
 
-subroutine schroed_outward_adams(l, Z, E, R, Rp, V, P, Q, imax, size_R)
+subroutine schroed_outward_adams(l, Z, E, R, Rp, V, P, Q, imax)
 ! Integrates the Schrodinger equation outward using Adams 4th order method
 !
 ! It integrates the Schroedinger equation in the P(r), Q(r) form outwards using
@@ -50,9 +50,8 @@ real(dp), intent(in) :: V(:)
 real(dp), intent(out) :: P(:), Q(:)
 real(dp), parameter :: max_val = 1e6_dp
 integer, intent(out) :: imax ! The integration was carried to R(imax)
-integer, intent(in) :: size_R
 
-real(dp), dimension(size_R) :: C, u1, u2, u1p, u2p, Vmid
+real(dp), dimension(size(R)) :: C, u1, u2, u1p, u2p, Vmid
 integer :: i
 real(dp) :: lambda, Delta, M(2, 2), u1_tmp, u2_tmp
 real(dp) :: tmp(4)
@@ -73,7 +72,7 @@ call integrate_rschroed_rk4(l, Z, E, R(:4), V(:4), Vmid(:3), &
 u1p(1:4) = Rp(1:4)          * u2(1:4)
 u2p(1:4) = Rp(1:4) * C(1:4) * u1(1:4)
 
-do i = 4, size_R-1
+do i = 4, size(R)-1
     u1p(i) = Rp(i)        * u2(i)
     u2p(i) = Rp(i) * C(i) * u1(i)
     u1_tmp  = u1(i) + adams_interp_outward_implicit(u1p, i)

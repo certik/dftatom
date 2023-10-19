@@ -32,15 +32,16 @@ call total_energy(d%fo, d%ks_energies, d%V_tot, d%V_h, d%V_coulomb, d%e_xc, &
 d%V_tot = d%V_coulomb + d%V_xc + d%V_h
 end subroutine
 
-subroutine V2rho(d, size_R)
+subroutine V2rho(d)
 ! Calculates rho from V by solving Kohn-Sham equations
 type(dft_data_t), intent(inout) :: d
-integer, intent(in) :: size_R
-real(dp), dimension(size_R) :: P, Q, Y, tmp
+
+real(dp), dimension(size(d%R)) :: P, Q, Y, tmp
 integer :: converged, i, n, l, relat, j
 real(dp) :: Ein, Emin_init, Emax_init
 
 d%rho(:) = 0
+!print *, d%scf_iter, d%ks_energies
 do i = 1, size(d%no)
     n = d%no(i)
     l = d%lo(i)
@@ -61,8 +62,10 @@ do i = 1, size(d%no)
         d%reigen_max_iter, &
         d%R, d%Rp, d%V_tot, &
         d%Z, d%c, relat, d%perturb, Emin_init, Emax_init, &
-        converged, d%ks_energies(i), P, Q, size(d%R))
+        converged, d%ks_energies(i), P, Q)
     if (converged /= 0) then
+        print *, "converged=", converged
+        print *, d%scf_iter, n, l, relat
         !print *, "skipping the state"
         !Y = 0
         call stop_error("V2rho: Radial eigen problem didn't converge")
@@ -90,7 +93,7 @@ real(dp) :: F(size(V))
 d%scf_iter = i
 ! We converge upon the non-Coulombic part of the potential:
 d%V_tot = d%V_coulomb + V
-call V2rho(d, size(d%R))
+call V2rho(d)
 call rho2V(d)
 F = d%V_xc + d%V_h - V
 end function
