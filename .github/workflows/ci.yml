@@ -76,7 +76,7 @@ jobs:
 
       - name: Print installed packages information
         shell: bash -exl {0}
-        run:
+        run: |
             ! which lfortran
             micromamba env list
             micromamba activate lf
