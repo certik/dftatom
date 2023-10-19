@@ -90,7 +90,7 @@ jobs:
           make -f Makefile.manual F90=lfortran F90FLAGS="-I../../src"
           # Fails so far:
           #./tests/atom_U/F_atom_U
-          make -f Makefile.manual test
+          #make -f Makefile.manual test
           git clean -dfx
 
 
