@@ -59,10 +59,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install packages
+      - name: Uninstall gfortran
         run: |
           set -ex
-          sudo apt-get update
           sudo apt-get purge gfortran
 
       - name: Build dftatom manual
