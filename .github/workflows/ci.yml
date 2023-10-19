@@ -51,12 +51,36 @@ jobs:
           make install
           ./tests/atom_U/F_atom_U
 
+
+  build_lfortran:
+    name: LFortran build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: |
+          set -ex
+          sudo apt-get update
+          sudo apt-get purge gfortran
+
+      - name: Build dftatom manual
+        run: |
+          set -ex
+          make -f Makefile.manual F90=lfortran F90FLAGS="-I../../src"
+          ./tests/atom_U/F_atom_U
+          make -f Makefile.manual test
+          git clean -dfx
+
+
   build_python:
     name: Python build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Install packages
         run: |
           set -ex
