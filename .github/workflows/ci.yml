@@ -18,14 +18,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gfortran libopenblas-dev liblapack-dev
 
-      - name: Build dftatom: manual
+      - name: Build dftatom manual
         run: |
           set -ex
           make -f Makefile.manual
           ./tests/atom_U/F_atom_U
           git clean -dfx
 
-      - name: Build dftatom: cmake
+      - name: Build dftatom cmake
         run: |
           set -ex
           cmake \
