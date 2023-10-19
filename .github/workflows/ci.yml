@@ -1,0 +1,41 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  buildfpm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install packages
+        run: |
+          set -ex
+          sudo apt-get update
+          sudo apt-get install -y gfortran libopenblas-dev liblapack-dev
+
+      - name: Build dftatom: manual
+        run: |
+          set -ex
+          make -f Makefile.manual
+          ./tests/atom_U/F_atom_U
+          git clean -dfx
+
+      - name: Build dftatom: cmake
+        run: |
+          set -ex
+          cmake \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_INSTALL_PREFIX="inst" \
+            -DWITH_PYTHON=NO \
+            -DWITH_LAPACK=NO \
+            -DCMAKE_INSTALL_RPATH:STRING="inst/lib" \
+            -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=ON \
+            .
+          make
+          make install
+          ./tests/atom_U/F_atom_U
