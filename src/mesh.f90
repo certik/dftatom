@@ -9,7 +9,7 @@ implicit none
 
 private
 public mesh_exp, mesh_exp_deriv, get_mesh_exp_params, mesh_exp_deriv2, &
-    linspace, meshgrid
+    linspace
 
 contains
 
@@ -161,12 +161,5 @@ integer, intent(in) :: n
 real(dp) :: s(n)
 s = mesh_exp(a, b, 1.0_dp, n-1)
 end function
-
-subroutine meshgrid(x, y, x2, y2)
-real(dp), intent(in) :: x(:), y(:)
-real(dp), intent(out) :: x2(:, :), y2(:, :)
-x2 = spread(x, 1, size(y))
-y2 = spread(y, 2, size(x))
-end subroutine
 
 end module
