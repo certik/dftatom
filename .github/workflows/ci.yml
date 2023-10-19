@@ -64,6 +64,21 @@ jobs:
           set -ex
           sudo apt-get purge gfortran
 
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: lf
+          create-args: >-
+            lfortran=0.22.0
+
+      - name: Print installed packages information
+        run: |
+            set -ex
+            which lfortran
+            micromamba env list
+            micromamba activate lf
+            micromamba list
+            which lfortran
+
       - name: Build dftatom manual
         run: |
           set -ex
