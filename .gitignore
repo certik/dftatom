@@ -1,7 +1,0 @@
-*.mod
-*.o
-*.a
-
-conv_lda
-conv_rlda
-F_atom_U
