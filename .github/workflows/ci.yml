@@ -35,6 +35,8 @@ jobs:
           make
           make install
           ./tests/atom_U/F_atom_U
+          ctest -E "conv_lda|conv_rlda|fd"
+          git clean -dfx
 
       - name: Build dftatom cmake lapack
         run: |
@@ -50,6 +52,7 @@ jobs:
           make
           make install
           ./tests/atom_U/F_atom_U
+          ctest -E "conv_lda|conv_rlda|fd|rmin_conv|N_conv"
 
   build_python:
     name: Python build
