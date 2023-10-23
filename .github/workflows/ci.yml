@@ -88,9 +88,10 @@ jobs:
         run: |
           set -ex
           make -f Makefile.manual F90=lfortran F90FLAGS="-I../../src"
-          ./tests/atom_U/F_atom_U
           make -f Makefile.manual test
           git clean -dfx
+          make -f Makefile.manual F90="lfortran --skip-pass=inline_function_calls,fma --fast" F90FLAGS="-I../../src"
+          make -f Makefile.manual test
 
 
   build_python:
