@@ -48,7 +48,6 @@ integer, intent(in) :: Z     ! Atomic number
 logical, intent(in), optional :: cut ! Cut the potential, default .true.
 real(dp) :: x(size(R)), Z_eff(size(R)), V(size(R))
 real(dp) :: alpha, beta, gamma
-integer :: i
 
 x = R * (128*Z/(9*pi**2)) ** (1.0_dp/3)
 ! Z_eff(x) = Z * phi(x), where phi(x) satisfies the Thomas-Fermi equation:
@@ -64,11 +63,7 @@ gamma = 0.3612163121_dp
 Z_eff = Z * (1 + alpha*sqrt(x) + beta*x*exp(-gamma*sqrt(x)))**2 * &
     exp(-2*alpha*sqrt(x))
 ! This keeps all the eigenvalues of the radial problem negative:
-if (.not. present(cut)) then
-    do i = 1, size(R)
-        if( Z_eff(i) < 1 ) Z_eff(i) = 1
-    end do
-end if
+if (.not. present(cut)) where (Z_eff < 1) Z_eff = 1
 V = -Z_eff / r
 end function
 

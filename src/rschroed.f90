@@ -54,7 +54,6 @@ integer, intent(out) :: imax ! The integration was carried to R(imax)
 real(dp), dimension(size(R)) :: C, u1, u2, u1p, u2p, Vmid
 integer :: i
 real(dp) :: lambda, Delta, M(2, 2), u1_tmp, u2_tmp
-real(dp) :: tmp(4)
 
 if (size(R) < 5) call stop_error("size(R) < 5")
 if (.not. (size(R) == size(Rp) .and. size(R) == size(V) .and. &
@@ -62,9 +61,7 @@ if (.not. (size(R) == size(Rp) .and. size(R) == size(V) .and. &
     call stop_error("Array sizes mismatch")
 end if
 C = (l*(l+1)/R**2 + 2 * (V-E))
-tmp = R(:4)
-Vmid(:3) = get_midpoints(tmp, V(:4))
-! Vmid(:3) = get_midpoints(R(:4), V(:4))
+Vmid(:3) = get_midpoints(R(:4), V(:4))
 call integrate_rschroed_rk4(l, Z, E, R(:4), V(:4), Vmid(:3), &
     u1(:4), u2(:4), imax)
 !u1(1:4) = R(1:4) ** (l+1)
@@ -124,7 +121,6 @@ real(dp), dimension(size(R)) :: C, u1, u2, u1p, u2p
 integer :: i, i_max
 real(dp) :: lambda, Delta, M(2, 2), u1_tmp, u2_tmp
 real(dp) :: R_max
-integer :: imaxitr
 
 C = (l*(l+1)/R**2 + 2 * (V-E))
 
@@ -144,12 +140,10 @@ do while (R(i_max) > R_max)
     i_max = i_max - 1
 end do
 
-do imaxitr = i_max, i_max + 4
-    u1(imaxitr) = exp(-lambda * (R(imaxitr)-R(1)))
-    u2(imaxitr) = - lambda * u1(imaxitr)
-    u1p(imaxitr) = Rp(imaxitr) * u2(imaxitr)
-    u2p(imaxitr) = Rp(imaxitr) * C(imaxitr) * u1(imaxitr)
-end do
+u1(i_max:i_max+4) = exp(-lambda * (R(i_max:i_max+4)-R(1)))
+u2(i_max:i_max+4) = - lambda * u1(i_max:i_max+4)
+u1p(i_max:i_max+4) = Rp(i_max:i_max+4)                * u2(i_max:i_max+4)
+u2p(i_max:i_max+4) = Rp(i_max:i_max+4) * C(i_max:i_max+4) * u1(i_max:i_max+4)
 
 do i = i_max, 2, -1
     u1p(i) = Rp(i)        * u2(i)

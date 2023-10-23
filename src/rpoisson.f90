@@ -37,12 +37,9 @@ real(dp), dimension(size(R)) :: u1, u2, u1p, u2p
 integer :: N, i, it
 integer, parameter :: max_it = 2
 real(dp) :: rho_mid(3)
-real(dp) :: tmp(4)
 
 N = size(R)
-tmp = R(:4)
-rho_mid = get_midpoints(tmp, rho(:4))
-! rho_mid = get_midpoints(R(:4), rho(:4))
+rho_mid = get_midpoints(R(:4), rho(:4))
 call rpoisson_outward_rk4(rho(:4), rho_mid, R(:4), &
     4*pi*integrate(Rp, rho*R), &
     0.0_dp, &

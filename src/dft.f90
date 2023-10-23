@@ -36,8 +36,8 @@ subroutine V2rho(d)
 ! Calculates rho from V by solving Kohn-Sham equations
 type(dft_data_t), intent(inout) :: d
 
-real(dp), dimension(size(d%R)) :: P, Q, Y, tmp
-integer :: converged, i, n, l, relat, j
+real(dp), dimension(size(d%R)) :: P, Q, Y
+integer :: converged, i, n, l, relat
 real(dp) :: Ein, Emin_init, Emax_init
 
 d%rho(:) = 0
@@ -75,9 +75,7 @@ do i = 1, size(d%no)
     else
         Y = sqrt(P**2 + Q**2) / d%R
     end if
-    do j = 1, size(d%R)
-        d%rho(j) = d%rho(j) + d%fo(i) * Y(j)**2
-    end do
+    d%rho = d%rho + d%fo(i) * Y**2
     d%orbitals(:, i) = Y
 end do
 d%rho = d%rho / (4*pi)
@@ -109,31 +107,19 @@ real(dp), intent(in) :: e_xc(:) ! XC density
 real(dp), intent(in) :: R(:), Rp(:), n(:) ! Radial grid, number density (positive)
 real(dp), intent(out) :: Etot ! Total energy
 real(dp), intent(out) :: T_s, E_ee, E_en, EE_xc ! Parts of the total energy
-real(dp) :: tmp(size(R))
+
 real(dp) :: rho(size(n))
-integer :: i
 real(dp) :: E_c, E_band!, Exc2
 rho = -n
 
 E_band = sum(fo * ks_energies)
-do i = 1, size(R)
-    tmp(i) = V_in(i) * rho(i) * R(i)**2
-end do
-T_s = E_band + 4*pi * integrate(Rp, tmp)
+T_s = E_band + 4*pi * integrate(Rp, V_in * rho * R**2)
 
-do i = 1, size(R)
-    tmp(i) = V_h(i) * rho(i) * R(i)**2
-end do
-E_ee = -2*pi * integrate(Rp, tmp)
-do i = 1, size(R)
-    tmp(i) = (-V_coulomb(i)) * rho(i) * R(i)**2
-end do
-E_en =  4*pi * integrate(Rp, tmp)
+E_ee = -2*pi * integrate(Rp, V_h * rho * R**2)
+E_en =  4*pi * integrate(Rp, (-V_coulomb) * rho * R**2)
 E_c = E_ee + E_en
-do i = 1, size(R)
-    tmp(i) = e_xc(i) * rho(i) * R(i)**2
-end do
-EE_xc = -4*pi * integrate(Rp, tmp)
+
+EE_xc = -4*pi * integrate(Rp, e_xc * rho * R**2)
 
 Etot = T_s + E_c + EE_xc
 end subroutine
