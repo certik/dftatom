@@ -12,3 +12,7 @@ if(WITH_C_INTERFACE)
     target_link_libraries(C_atom_U dftatom)
     add_test(C_atom_U ${PROJECT_BINARY_DIR}/C_atom_U)
 endif()
+
+add_executable(uraninum_rlda uraninum_rlda.f90)
+target_link_libraries(uraninum_rlda dftatom)
+add_test(uraninum_rlda ${PROJECT_BINARY_DIR}/uraninum_rlda)
