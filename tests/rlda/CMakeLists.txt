@@ -6,3 +6,8 @@ add_executable(conv_rlda conv_rlda.f90)
 target_link_libraries(conv_rlda dftatom)
 
 add_test(conv_rlda ${PROJECT_BINARY_DIR}/conv_rlda)
+
+add_executable(uraninum_rlda uraninum_rlda.f90)
+target_link_libraries(uraninum_rlda dftatom)
+
+add_test(uraninum_rlda ${PROJECT_BINARY_DIR}/uraninum_rlda)
