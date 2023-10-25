@@ -14,7 +14,7 @@ implicit none
 integer :: Z = 92 ! Uraninum
 ! Mesh parameters:
 real(dp), parameter :: r_min = 1e-8_dp, r_max = 50.0_dp, a = 6.2e7_dp
-integer :: NN
+integer, parameter :: NN = 5269
 
 ! 1986 CODATA  -4223.41902095
 real(dp), parameter :: c = 137.0359895_dp
@@ -68,7 +68,6 @@ eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
 print *, "Test eps:", eps
 Z = 92
 n_orb = size(ks_energies_exact)
-NN = get_N(Z, p)
 allocate(ks_energies(n_orb), no(n_orb), &
     lo(n_orb), fo(n_orb), orbitals(NN+1, n_orb), R(NN+1), V_tot(NN+1), &
     density(NN+1), so(n_orb), Rp(NN+1))
@@ -90,18 +89,5 @@ do i = 1, size(ks_energies)
             l_names(lo(i)), ks_energies(i), ks_energies_exact(i), err, fo(i)
     if (err > eps) call stop_error("err > eps")
 end do
-
-contains
-
-integer function get_N(Z, p) result(N)
-integer, intent(in) :: Z, p
-integer :: fZ, u
-open(newunit(u), file="data" // str(p) // ".dat", status="old")
-read(u, *) fZ, N
-do while (fZ /= Z)
-    read(u, *) fZ, N
-end do
-close(u)
-end function
 
 end program
