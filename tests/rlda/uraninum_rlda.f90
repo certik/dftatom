@@ -1,13 +1,10 @@
-program conv_rlda
-! Calculates the relativistic DFT energies for Z=92 (U)
+program uranium_rlda
+! Calculates the relativistic DFT energies for Z=92 (U) to 1e-6 a.u. accuracy.
 !
-! The purpose of this test is to check that:
-! a) SCF works
-! b) all SCF U energies can converge to the given accuracy
-! c) it converges to the correct energies (XC and other DFT things are correct)
+! This program can be used to benchmark the performance of dftatom.
 use dftatom, only: atom_rlda
 use types, only: dp
-use utils, only: str, stop_error, newunit
+use utils, only: stop_error
 implicit none
 
 ! Atomic number:
