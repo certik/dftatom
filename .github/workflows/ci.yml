@@ -92,6 +92,15 @@ jobs:
           git clean -dfx
           make -f Makefile.manual F90="lfortran --skip-pass=inline_function_calls,fma --fast" F90FLAGS="-I../../src"
           make -f Makefile.manual test
+          git clean -dfx
+
+      - name: Build dftatom cmake
+        shell: bash -l {0}
+        run: |
+          set -ex
+          cmake .
+          make
+          ctest
 
 
   build_python:
