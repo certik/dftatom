@@ -82,13 +82,13 @@ print *, "N=", NN
 err = abs(E_tot - E_tot_exact)
 print '("E_tot=", F16.8, " E_tot_exact=", F16.8, " error:", ES10.2)', &
         E_tot, E_tot_exact, err
-if (err > eps) call error(err, eps)
+if (err > eps) call stop_error("err > eps")
 print *, "state    E            E_exact          error     occupancy"
 do i = 1, size(ks_energies)
     err = (ks_energies_exact(i) - ks_energies(i))
     print "(I1, A, ' ', F16.8, F16.8, ES10.2, '   ', F6.3)", no(i), &
             l_names(lo(i)), ks_energies(i), ks_energies_exact(i), err, fo(i)
-    if (err > eps) call error(err, eps)
+    if (err > eps) call stop_error("err > eps")
 end do
 
 contains
@@ -103,12 +103,5 @@ do while (fZ /= Z)
 end do
 close(u)
 end function
-
-subroutine error(err, eps)
-real(dp), intent(in) :: err, eps
-print "('Test failed: error = ', es10.2, '   > ', es10.2, ' specified.')", &
-        err, eps
-call stop_error("Aborting...")
-end subroutine
 
 end program
