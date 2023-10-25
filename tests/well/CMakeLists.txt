@@ -5,6 +5,9 @@ project(well)
 set(SRC
     special.f90 optimize.f90
     )
+
+add_definitions("--implicit-typing")
+
 add_library(well ${SRC})
 add_dependencies(well dftatom)
 

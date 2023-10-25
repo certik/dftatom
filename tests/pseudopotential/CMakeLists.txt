@@ -3,7 +3,7 @@ include_directories(${PROJECT_BINARY_DIR}/src)
 project(pseudopotential)
 
 # The erf() function is part of the F2008 standard
-add_definitions("-std=f2008")
+#add_definitions("-std=f2008")
 
 add_executable(vloc_nonrel vloc_nonrel.f90)
 target_link_libraries(vloc_nonrel dftatom)
