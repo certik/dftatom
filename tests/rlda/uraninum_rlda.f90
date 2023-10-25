@@ -21,12 +21,42 @@ real(dp), parameter :: c = 137.0359895_dp
 
 integer :: i, n_orb
 character, parameter :: l_names(0:3) = (/ "s", "p", "d", "f" /)
-real(dp) :: err, E_tot, E_tot_exact
+real(dp) :: err, E_tot
+real(dp), parameter :: E_tot_exact = -28001.1323254868_dp
 real(dp), parameter :: reigen_eps = 1e-10_dp
 real(dp), parameter :: mixing_eps = 5e-9_dp
 integer, allocatable, dimension(:) :: no, lo, so
 real(dp), allocatable, dimension(:) :: fo, ks_energies
-real(dp), pointer, dimension(:) :: ks_energies_exact
+real(dp), parameter :: ks_energies_exact(29) = [ &
+                -4223.4190204552_dp, &
+                -789.4897823303_dp, &
+                -761.3744759730_dp, &
+                -622.8480945649_dp, &
+                -199.4298056450_dp, &
+                -186.6637131249_dp, &
+                -154.7010266741_dp, &
+                -134.5411802896_dp, &
+                -128.0166573820_dp, &
+                -50.7889480646_dp, &
+                -45.0371712884_dp, &
+                -36.6886104859_dp, &
+                -27.5293062430_dp, &
+                -25.9854289064_dp, &
+                -13.8895142333_dp, &
+                -13.4854696912_dp, &
+                -11.2955870987_dp, &
+                -9.0579642498_dp, &
+                -7.0692956350_dp, &
+                -3.7974162278_dp, &
+                -3.5012171832_dp, &
+                -0.1467883850_dp, &
+                -0.1160471651_dp, &
+                -1.7480399541_dp, &
+                -1.1011189998_dp, &
+                -0.7757841787_dp, &
+                -0.1030408153_dp, &
+                -0.0848020246_dp, &
+                -0.1609472826_dp ]
 real(dp), allocatable :: orbitals(:, :)
 real(dp), allocatable :: R(:), Rp(:), V_tot(:), density(:)
 real(dp) :: eps
@@ -36,7 +66,7 @@ p = 6
 eps = 10.0_dp**(-p)
 eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
 print *, "Test eps:", eps
-call get_LDA_energies(Z, ks_energies_exact, E_tot_exact)
+Z = 92
 n_orb = size(ks_energies_exact)
 NN = get_N(Z, p)
 allocate(ks_energies(n_orb), no(n_orb), &
@@ -62,29 +92,6 @@ do i = 1, size(ks_energies)
 end do
 
 contains
-
-subroutine get_LDA_energies(Z, ks_energies, E_tot)
-integer, intent(in) :: Z
-real(dp), pointer :: ks_energies(:)
-real(dp), intent(out) :: E_tot
-integer :: i, fZ, n, u
-open(newunit(u), file="rel_energies.dat", status="old")
-do i = 1, 5
-    read(u, *) ! header
-end do
-read(u, *) fZ
-do while (fZ /= Z)
-    read(u, *) ! E_tot
-    read(u, *) ! n, ks_energies(n)
-    read(u, *) fZ
-end do
-read(u, *) E_tot
-read(u, *) n
-allocate(ks_energies(n))
-backspace(u)
-read(u, *) n, ks_energies
-close(u)
-end subroutine
 
 integer function get_N(Z, p) result(N)
 integer, intent(in) :: Z, p
