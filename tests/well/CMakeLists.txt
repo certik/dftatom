@@ -6,7 +6,9 @@ set(SRC
     special.f90 optimize.f90
     )
 
-add_definitions("--implicit-typing")
+if (CMAKE_Fortran_COMPILER_ID STREQUAL "LFortran")
+    add_definitions("--implicit-typing")
+endif()
 
 add_library(well ${SRC})
 add_dependencies(well dftatom)
