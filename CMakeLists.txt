@@ -10,6 +10,13 @@ enable_language(Fortran)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/mod_files)
 
+# Until CMake supports LFortran natively, we recognize it by hand and set the
+# native CMAKE_Fortran_COMPILER_ID variable.
+string(REGEX MATCH "lfortran" fortran_compiler_suffix ${CMAKE_Fortran_COMPILER})
+if(fortran_compiler_suffix STREQUAL lfortran)
+    set(CMAKE_Fortran_COMPILER_ID "LFortran")
+endif()
+
 # Make sure that CMAKE_BUILD_TYPE is either Debug or Release:
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release
@@ -63,6 +70,7 @@ message("\n")
 message("Configuration results")
 message("---------------------")
 message("Fortran compiler: ${CMAKE_Fortran_COMPILER}")
+message("CMAKE_Fortran_COMPILER_ID: ${CMAKE_Fortran_COMPILER_ID}")
 message("Build type: ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("Fortran compiler flags: ${CMAKE_Fortran_FLAGS_DEBUG}")
