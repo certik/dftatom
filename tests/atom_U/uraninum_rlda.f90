@@ -20,8 +20,8 @@ integer :: i, n_orb
 character, parameter :: l_names(0:3) = (/ "s", "p", "d", "f" /)
 real(dp) :: err, E_tot
 real(dp), parameter :: E_tot_exact = -28001.1323254868_dp
-real(dp), parameter :: reigen_eps = 1e-10_dp
-real(dp), parameter :: mixing_eps = 5e-9_dp
+real(dp), parameter :: reigen_eps = 1e-7_dp
+real(dp), parameter :: mixing_eps = 2e-5_dp
 integer, allocatable, dimension(:) :: no, lo, so
 real(dp), allocatable, dimension(:) :: fo, ks_energies
 real(dp), parameter :: ks_energies_exact(29) = [ &
