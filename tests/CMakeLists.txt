@@ -1,4 +1,4 @@
-#add_subdirectory(mixings)
+add_subdirectory(mixings)
 add_subdirectory(hydrogen)
 add_subdirectory(boron)
 add_subdirectory(Z92n7all)
