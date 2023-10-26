@@ -5,6 +5,8 @@ module optimize
 use types, only: dp
 use utils, only: stop_error
 implicit none
+private
+public bisect
 
 interface
     real(dp) function func(n, x)

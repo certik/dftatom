@@ -7,6 +7,8 @@ use constants, only: pi
 use utils, only: stop_error
 use optimize, only: bisect
 implicit none
+private
+public spherical_bessel_jn, spherical_bessel_jn_zeros, SPHY
 
 contains
 
