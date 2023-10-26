@@ -71,7 +71,7 @@ jobs:
         with:
           environment-name: lf
           create-args: >-
-            lfortran=0.26.0
+            lfortran=0.27.0
 
       - name: Print installed packages information
         shell: bash -l {0}
