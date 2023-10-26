@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_SOURCE_DIR}/cmake/UserOverride.cmake)
 
@@ -61,6 +61,7 @@ message("\n")
 message("Configuration results")
 message("---------------------")
 message("Fortran compiler: ${CMAKE_Fortran_COMPILER}")
+message("CMAKE_Fortran_COMPILER_ID: ${CMAKE_Fortran_COMPILER_ID}")
 message("Build type: ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("Fortran compiler flags: ${CMAKE_Fortran_FLAGS_DEBUG}")
