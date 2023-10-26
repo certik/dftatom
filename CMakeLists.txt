@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_SOURCE_DIR}/cmake/UserOverride.cmake)
 
@@ -7,6 +7,14 @@ enable_language(Fortran)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/mod_files)
+
+# Until CMake supports LFortran natively, we recognize it by hand and set the
+# native CMAKE_Fortran_COMPILER_ID variable.
+string(REGEX MATCH "lfortran" fortran_compiler_suffix ${CMAKE_Fortran_COMPILER})
+if(fortran_compiler_suffix STREQUAL lfortran)
+    set(CMAKE_Fortran_COMPILER_ID "LFortran")
+    set(CMAKE_Fortran_FLAGS_RELEASE "--fast --skip-pass=inline_function_calls,fma")
+endif()
 
 # Make sure that CMAKE_BUILD_TYPE is either Debug or Release:
 if (NOT CMAKE_BUILD_TYPE)
@@ -61,6 +69,7 @@ message("\n")
 message("Configuration results")
 message("---------------------")
 message("Fortran compiler: ${CMAKE_Fortran_COMPILER}")
+message("CMAKE_Fortran_COMPILER_ID: ${CMAKE_Fortran_COMPILER_ID}")
 message("Build type: ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("Fortran compiler flags: ${CMAKE_Fortran_FLAGS_DEBUG}")
