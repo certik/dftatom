@@ -54,12 +54,68 @@ jobs:
           ./tests/atom_U/F_atom_U
           ctest -E "conv_lda|conv_rlda|fd|rmin_conv|N_conv"
 
+
+  build_lfortran:
+    name: LFortran build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Uninstall gfortran
+        run: |
+          set -ex
+          sudo apt-get purge gfortran
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: lf
+          create-args: >-
+            lfortran=0.27.0
+
+      - name: Print installed packages information
+        shell: bash -l {0}
+        run: |
+            set -ex
+            ! which lfortran
+            micromamba env list
+            micromamba activate lf
+            micromamba list
+            which lfortran
+
+      - name: Build dftatom manual
+        shell: bash -l {0}
+        run: |
+          set -ex
+          make -f Makefile.manual F90=lfortran F90FLAGS="-I../../src"
+          ./tests/atom_U/F_atom_U
+          #make -f Makefile.manual test
+          git clean -dfx
+          make -f Makefile.manual F90="lfortran --skip-pass=inline_function_calls,fma --fast" F90FLAGS="-I../../src"
+          ./tests/atom_U/F_atom_U
+          #make -f Makefile.manual test
+          git clean -dfx
+
+      - name: Build dftatom cmake
+        shell: bash -l {0}
+        run: |
+          set -ex
+          cmake -DCMAKE_BUILD_TYPE=Debug .
+          make
+          ctest -E "conv_lda|conv_rlda"
+          git clean -dfx
+          cmake -DCMAKE_BUILD_TYPE=Release .
+          make
+          ctest -E "conv_lda|conv_rlda"
+
+
   build_python:
     name: Python build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Install packages
         run: |
           set -ex
