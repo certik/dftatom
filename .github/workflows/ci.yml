@@ -100,7 +100,11 @@ jobs:
         shell: bash -l {0}
         run: |
           set -ex
-          cmake .
+          cmake -DCMAKE_BUILD_TYPE=Debug .
+          make
+          ctest -E "conv_lda|conv_rlda"
+          git clean -dfx
+          cmake -DCMAKE_BUILD_TYPE=Release .
           make
           ctest -E "conv_lda|conv_rlda"
 
