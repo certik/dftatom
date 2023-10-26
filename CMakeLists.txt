@@ -13,6 +13,7 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/mod_files)
 string(REGEX MATCH "lfortran" fortran_compiler_suffix ${CMAKE_Fortran_COMPILER})
 if(fortran_compiler_suffix STREQUAL lfortran)
     set(CMAKE_Fortran_COMPILER_ID "LFortran")
+    set(CMAKE_Fortran_FLAGS_RELEASE "--fast --skip-pass=inline_function_calls,fma")
 endif()
 
 # Make sure that CMAKE_BUILD_TYPE is either Debug or Release:
