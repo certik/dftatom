@@ -104,10 +104,10 @@ print *, "The first 10 values of the Hartree potential (V_h):"
 print *, V_h(:10)
 
 ! Save the radial grid, density, V_h
-!open(newunit(u), file="density.txt", status="replace")
-!write(u, "((es23.16, ' ', es23.16, ' ', es23.16))") (R(i), density(i), V_h(i), &
-!        i=1, size(R))
-!close(u)
+open(newunit=u, file="density.txt", status="replace")
+write(u, "((es23.16, ' ', es23.16, ' ', es23.16))") (R(i), density(i), V_h(i), &
+        i=1, size(R))
+close(u)
 
 call assert(abs(ks_energies(1) - (-1.613029_dp)) < 1e-6_dp)
 call assert(abs(ks_energies(2) - (-0.181696_dp)) < 1e-6_dp)
