@@ -31,7 +31,7 @@ if(WITH_C_INTERFACE)
     set(SRC ${SRC} c_dftatom.f90)
 endif()
 
-add_library(dftatom SHARED ${SRC})
+add_library(dftatom ${SRC})
 target_include_directories(dftatom PUBLIC
     $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
     $<INSTALL_INTERFACE:include/dftatom>
