@@ -26,6 +26,7 @@ real(dp), pointer :: fo(:) ! occupancy of the (n, l) state
 ! Note: sum(fo) == Z
 
 integer :: n
+integer :: i, l
 
 select case (Z)
 
@@ -667,11 +668,18 @@ select case (Z)
         fo = (/ 2, 2, 6, 2, 6, 10, 2, 6, 10, 14, 2, 6, 10, 2, 2, 6, 1, 2 /)
 
     case (92)
-        n = 18
+        n = 28
         allocate(no(n), lo(n), fo(n))
-        no = (/ 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 7 /)
-        lo = (/ 0, 0, 1, 0, 1, 2, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 0 /)
-        fo = (/ 2, 2, 6, 2, 6, 10, 2, 6, 10, 14, 2, 6, 10, 3, 2, 6, 1, 2 /)
+        i = 1
+        outer: do n = 1, 7
+            do l = 0, n-1
+                no(i) = n
+                lo(i) = l
+                fo(i) = 2
+                !if (n == 7 .and. l == 5) exit outer
+                i = i + 1
+            end do
+        end do outer
 
     case default
         print *, "Z =", Z
