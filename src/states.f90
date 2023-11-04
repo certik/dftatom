@@ -668,7 +668,7 @@ select case (Z)
         fo = (/ 2, 2, 6, 2, 6, 10, 2, 6, 10, 14, 2, 6, 10, 2, 2, 6, 1, 2 /)
 
     case (92)
-        n = 27
+        n = 28
         allocate(no(n), lo(n), fo(n))
         i = 1
         outer: do n = 1, 7
@@ -676,7 +676,7 @@ select case (Z)
                 no(i) = n
                 lo(i) = l
                 fo(i) = 2
-                if (n == 7 .and. l == 5) exit outer
+                !if (n == 7 .and. l == 5) exit outer
                 i = i + 1
             end do
         end do outer
