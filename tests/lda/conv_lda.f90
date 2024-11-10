@@ -29,12 +29,17 @@ real(dp), allocatable :: orbitals(:, :)
 real(dp) :: eps
 real(dp), allocatable :: R(:), Rp(:), V_tot(:), density(:)
 integer :: p
+logical :: quicktest
+
+quicktest = (command_argument_count() >= 1)
 
 do p = 3, 8
+    if (quicktest .and. p /= 8) cycle
     eps = 10.0_dp**(-p)
     eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
     print *, "Test eps:", eps
     do Z = 92, 1, -1
+        if (quicktest .and. modulo(Z, 23) /= 0) cycle
         n_orb = get_atom_orb(Z)
         NN = get_N(Z, p)
         allocate(ks_energies(n_orb), no(n_orb), &
