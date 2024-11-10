@@ -31,12 +31,17 @@ real(dp), allocatable :: orbitals(:, :)
 real(dp), allocatable :: R(:), Rp(:), V_tot(:), density(:)
 real(dp) :: eps
 integer :: p
+logical :: quicktest
+
+quicktest = (command_argument_count() >= 1)
 
 do p = 3, 8
+    if (quicktest .and. p /= 8) cycle
     eps = 10.0_dp**(-p)
     eps = eps * 1.2_dp ! Allow numerical differences across compilers/platforms
     print *, "Test eps:", eps
     do Z = 92, 1, -1
+        if (quicktest .and. modulo(Z, 23) /= 0) cycle
         call get_LDA_energies(Z, ks_energies_exact, E_tot_exact)
         n_orb = size(ks_energies_exact)
         NN = get_N(Z, p)

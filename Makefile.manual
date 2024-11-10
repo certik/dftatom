@@ -2,7 +2,7 @@
 
 # GFortran
 F90 = gfortran
-F90FLAGS = -Wall -std=f95 -Wextra -Wimplicit-interface -fPIC
+F90FLAGS = -Wall -std=f2003 -Wextra -Wimplicit-interface -fPIC
 # Debug flags:
 F90FLAGS += -g -fbounds-check
 # Release flags:
@@ -27,6 +27,11 @@ all:
 
 test:
 	cd tests; make -f Makefile.manual test
+	@echo
+	@echo "All tests passed."
+
+quicktest:
+	cd tests; make -f Makefile.manual quicktest
 	@echo
 	@echo "All tests passed."
 

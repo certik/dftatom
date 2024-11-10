@@ -8,6 +8,9 @@ $(PROG): $(OBJS)
 test:
 	./$(PROG)
 
+quicktest:
+	./$(PROG) quicktest
+
 clean:
 	rm -f $(PROG) $(OBJS) *.mod
 
